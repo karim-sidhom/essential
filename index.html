@@ -1430,10 +1430,15 @@ function forceManualExecution(){
 function startGPS(){
   if(!navigator.geolocation){document.getElementById('gps-status').textContent='تعذّر الوصول إلى GPS';return;}
   if(gpsWatchId)navigator.geolocation.clearWatch(gpsWatchId);
+  const GPS_OPT={enableHighAccuracy:true,timeout:20000,maximumAge:0};
   gpsWatchId=navigator.geolocation.watchPosition(
     pos=>executeUnifiedPipeline(pos.coords.latitude,pos.coords.longitude),
-    ()=>document.getElementById('gps-status').textContent='تعذّر الوصول إلى GPS',
-    {enableHighAccuracy:true,maximumAge:30000}
+    err=>{
+      const msgs={1:'⚠️ رُفض إذن GPS — اسمح بالموقع من إعدادات المتصفح',2:'⚠️ GPS غير متاح أو الإشارة ضعيفة',3:'⚠️ انتهت مهلة GPS — نحاول مجدداً'};
+      document.getElementById('gps-status').textContent=(err&&msgs[err.code])||'تعذّر الوصول إلى GPS';
+      if(err&&err.code===1&&gpsWatchId!==null){navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null;}
+    },
+    GPS_OPT
   );
 }
 startGPS();
