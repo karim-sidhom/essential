@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LORD SYSTEM — نظام التنقل الذكي</title>
 <meta name="theme-color" content="#0a0005">
+<link rel="manifest" href="./manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LORD">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;500;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -177,17 +183,56 @@ body{font-family:'Tajawal',sans-serif;background-color:var(--deep);color:var(--t
   100%{opacity:0;}          /* longue pause */
 }
 
+/* ── IQAMA + ADHAN SETTINGS ── */
+.iqama-settings-wrap{margin-bottom:14px;}
+.iqama-toggle-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.22);border-radius:10px;padding:9px 14px;}
+.iqama-toggle-title{font-family:'Amiri',serif;font-size:13px;color:var(--gold-shine);display:flex;align-items:center;gap:6px;}
+.iqama-toggle-arrow{color:var(--text-dim);font-size:11px;transition:transform .25s;}
+.iqama-toggle-arrow.open{transform:rotate(180deg);}
+.iqama-body{display:none;background:rgba(0,0,0,0.4);border:1px solid rgba(255,215,0,0.12);border-top:none;border-radius:0 0 10px 10px;padding:12px 14px;}
+.iqama-body.open{display:block;}
+.iq-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-top:1px solid rgba(255,255,255,0.04);}
+.iq-row:first-child{border-top:none;}
+.iq-label{font-size:12px;color:var(--text-dim);font-family:'Amiri',serif;}
+.iq-input{width:58px;background:rgba(255,215,0,0.08);color:var(--gold-shine);border:1px solid rgba(255,215,0,0.22);border-radius:7px;padding:4px 6px;font-family:'DM Mono';font-size:13px;font-weight:700;text-align:center;outline:none;direction:ltr;}
+.iq-input:focus{border-color:var(--gold-bright);}
+.iq-unit{font-size:10px;color:rgba(212,160,23,0.45);margin-right:4px;}
+/* Lang selector */
+.lang-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.lang-b{padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;border:1px solid rgba(255,215,0,0.25);background:transparent;color:var(--text-dim);cursor:pointer;font-family:'Tajawal';transition:all .2s;}
+.lang-b.active{background:rgba(255,215,0,0.15);color:var(--gold-bright);border-color:var(--gold-bright);}
+/* Toggle switch */
+.sw{position:relative;width:38px;height:20px;flex-shrink:0;}
+.sw input{opacity:0;width:0;height:0;}
+.sw-sl{position:absolute;inset:0;background:rgba(255,255,255,0.1);border-radius:20px;cursor:pointer;transition:background .2s;}
+.sw-sl::before{content:'';position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s;}
+.sw input:checked+.sw-sl{background:var(--gold-bright);}
+.sw input:checked+.sw-sl::before{transform:translateX(18px);}
+/* Adhan announce banner */
+.adhan-announce{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:linear-gradient(135deg,rgba(10,0,5,0.98),rgba(40,0,16,0.97));border-top:2px solid var(--gold-bright);padding:16px 22px 22px;text-align:center;animation:slideUp .4s ease;box-shadow:0 -10px 40px rgba(255,215,0,0.2);}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.aa-name{font-family:'Amiri',serif;font-size:22px;color:var(--gold-shine);text-shadow:0 0 20px rgba(255,215,0,0.7);margin-bottom:4px;}
+.aa-sub{font-size:12px;color:var(--text-dim);margin-bottom:10px;}
+.aa-close{background:rgba(255,215,0,0.1);color:var(--gold-bright);border:1px solid rgba(255,215,0,0.3);border-radius:8px;padding:7px 22px;font-family:'Tajawal';font-size:12px;font-weight:700;cursor:pointer;}
+/* Vibration badge */
+.vib-badge{display:none;position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:201;background:rgba(255,215,0,0.92);color:#0a0005;border-radius:12px;padding:8px 20px;font-size:13px;font-weight:800;font-family:'Tajawal';box-shadow:0 4px 20px rgba(255,215,0,0.5);animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+/* Iqama time in prayer cell */
+.pc-iqama{font-family:'DM Mono';font-size:9.5px;color:#0a0005;opacity:0.75;margin-top:2px;direction:ltr;}
+.pc-iq-label{font-size:7.5px;color:#0a0005;opacity:0.55;font-family:'Tajawal';}
+
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,rgba(20,0,8,0.97),rgba(50,0,20,0.95));border:1px solid rgba(255,215,0,0.4);color:var(--gold-bright);padding:11px 22px;border-radius:50px;font-family:'Tajawal';font-size:13px;font-weight:700;z-index:999;box-shadow:0 4px 30px rgba(0,0,0,0.6);opacity:0;transition:opacity .4s;pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;}
 </style>
-<link rel="manifest" href="./manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="LORD">
-<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 </head>
 <body>
+
+<div class="adhan-announce" id="adhan-announce">
+  <div class="aa-name" id="aa-prayer-name">الأذان</div>
+  <div class="aa-sub" id="aa-sub">حان وقت الصلاة</div>
+  <button class="aa-close" onclick="document.getElementById('adhan-announce').style.display='none';window.speechSynthesis&&window.speechSynthesis.cancel();">✕ إغلاق</button>
+</div>
+<div class="vib-badge" id="vib-badge">📳 تنبيه: الأذان بعد قليل</div>
 
 <div class="gold-topline"></div>
 <div class="gold-bottomline"></div>
@@ -291,9 +336,9 @@ body{font-family:'Tajawal',sans-serif;background-color:var(--deep);color:var(--t
     <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,215,0,0.22);border-radius:12px;padding:12px 14px;">
       <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;text-align:center;font-family:'Tajawal';">اختر المقدّم — Choisir le présentateur</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;" id="presenter-grid">
-        <button class="presenter-btn active" data-lang="ar-SA" data-name="عادل بوغزالة" onclick="setPresenter(this)">
+        <button class="presenter-btn active" data-lang="ar-SA" data-name="عادل غريب" onclick="setPresenter(this)">
           <div style="font-size:16px;">🇹🇳</div>
-          <div style="font-size:10px;font-family:'Amiri',serif;">عادل بوغزالة</div>
+          <div style="font-size:10px;font-family:'Amiri',serif;">عادل غريب</div>
           <div style="font-size:8px;opacity:0.6;">درجة</div>
         </button>
         <button class="presenter-btn" data-lang="ar-SA" data-name="صلاح الدين غلاب" onclick="setPresenter(this)">
@@ -323,7 +368,7 @@ body{font-family:'Tajawal',sans-serif;background-color:var(--deep);color:var(--t
       <input type="text" id="man-lon" placeholder="خط الطول — Longitude" dir="ltr">
       <button class="manual-btn" onclick="forceManualExecution()">✦ تشغيل النظام</button>
     </div>
-    <div class="gps-status" id="gps-status">SYSTEM INITIALIZED.</div>
+    <div class="gps-status" id="gps-status">جاري تحديد موقعك...</div>
   </div>
 
   <div class="prayer-card">
@@ -333,6 +378,40 @@ body{font-family:'Tajawal',sans-serif;background-color:var(--deep);color:var(--t
     </div>
     <div class="prayer-strip" id="prayer-strip">
       <div style="color:var(--text-dim);font-size:12px;padding:10px 0;grid-column:span 5;text-align:center;">جارٍ التحميل...</div>
+    </div>
+  </div>
+
+  <!-- IQAMA & ALERT SETTINGS -->
+  <div class="iqama-settings-wrap">
+    <div class="iqama-toggle-header" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.iqama-toggle-arrow').classList.toggle('open');">
+      <div class="iqama-toggle-title">🕐 أوقات الإقامة والتنبيهات</div>
+      <div class="iqama-toggle-arrow">▼</div>
+    </div>
+    <div class="iqama-body">
+      <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;font-family:'Tajawal';">⏱️ دقائق الإقامة بعد الأذان:</div>
+      <div class="iq-row"><span class="iq-label">الفجر</span><div style="display:flex;align-items:center;gap:4px;"><input type="number" class="iq-input" id="iq-fajr" value="20" min="1" max="60"><span class="iq-unit">دقيقة</span></div></div>
+      <div class="iq-row"><span class="iq-label">الظهر</span><div style="display:flex;align-items:center;gap:4px;"><input type="number" class="iq-input" id="iq-dhuhr" value="10" min="1" max="60"><span class="iq-unit">دقيقة</span></div></div>
+      <div class="iq-row"><span class="iq-label">العصر</span><div style="display:flex;align-items:center;gap:4px;"><input type="number" class="iq-input" id="iq-asr" value="10" min="1" max="60"><span class="iq-unit">دقيقة</span></div></div>
+      <div class="iq-row"><span class="iq-label">المغرب</span><div style="display:flex;align-items:center;gap:4px;"><input type="number" class="iq-input" id="iq-maghrib" value="5" min="1" max="60"><span class="iq-unit">دقيقة</span></div></div>
+      <div class="iq-row"><span class="iq-label">العشاء</span><div style="display:flex;align-items:center;gap:4px;"><input type="number" class="iq-input" id="iq-isha" value="15" min="1" max="60"><span class="iq-unit">دقيقة</span></div></div>
+      <div style="font-size:11px;color:var(--text-dim);margin:12px 0 6px;font-family:'Tajawal';">🔔 إعدادات التنبيه:</div>
+      <div class="iq-row"><span class="iq-label" style="font-size:12px;color:var(--text);">📢 إعلان صوتي عند الأذان</span><label class="sw"><input type="checkbox" id="tog-adhan" checked><span class="sw-sl"></span></label></div>
+      <div class="iq-row"><span class="iq-label" style="font-size:12px;color:var(--text);">📳 اهتزاز قبل الأذان</span><label class="sw"><input type="checkbox" id="tog-vib" checked><span class="sw-sl"></span></label></div>
+      <div class="iq-row"><span class="iq-label" style="font-size:12px;color:var(--text);">🕌 ذكر اسم المسجد</span><label class="sw"><input type="checkbox" id="tog-mosque-name" checked><span class="sw-sl"></span></label></div>
+      <div class="iq-row">
+        <span class="iq-label" style="font-size:12px;color:var(--text);">📳 قبل الأذان بـ</span>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <input type="number" class="iq-input" id="vib-mins" value="15" min="1" max="60">
+          <span class="iq-unit">دقيقة</span>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text-dim);margin:10px 0 5px;font-family:'Tajawal';">🌐 لغة الإعلان الصوتي:</div>
+      <div class="lang-btns">
+        <button class="lang-b active" data-lang="ar" onclick="setAdhanLang(this)">🇸🇦 عربي</button>
+        <button class="lang-b" data-lang="fr" onclick="setAdhanLang(this)">🇫🇷 Français</button>
+        <button class="lang-b" data-lang="en" onclick="setAdhanLang(this)">🇬🇧 English</button>
+      </div>
+      <button onclick="testAdhan()" style="width:100%;margin-top:10px;padding:8px;border-radius:8px;background:rgba(255,215,0,0.1);color:var(--gold-bright);border:1px solid rgba(255,215,0,0.3);font-family:'Tajawal';font-size:12px;font-weight:700;cursor:pointer;">🔊 اختبار الإعلان</button>
     </div>
   </div>
 
@@ -373,13 +452,60 @@ body{font-family:'Tajawal',sans-serif;background-color:var(--deep);color:var(--t
 </div>
 
 <script>
+// ══ IQAMA & ADHAN ANNOUNCE ══
+let adhanAnnounceLang='ar';
+let _lastVibKey='',_lastAdhanKey='';
+const PRAYER_NAMES_ANNOUNCE={
+  ar:{Fajr:'الفجر',Dhuhr:'الظهر',Asr:'العصر',Maghrib:'المغرب',Isha:'العشاء'},
+  fr:{Fajr:'Fadjr',Dhuhr:'Dhouhr',Asr:'Asr',Maghrib:'Maghrib',Isha:'Icha'},
+  en:{Fajr:'Fajr',Dhuhr:'Dhuhr',Asr:'Asr',Maghrib:'Maghrib',Isha:'Isha'},
+};
+const ADHAN_LANG_CODES={ar:'ar-SA',fr:'fr-FR',en:'en-GB'};
+function setAdhanLang(btn){document.querySelectorAll('.lang-b').forEach(b=>b.classList.remove('active'));btn.classList.add('active');adhanAnnounceLang=btn.dataset.lang;}
+function getIqMins(){return{Fajr:parseInt(document.getElementById('iq-fajr').value)||20,Dhuhr:parseInt(document.getElementById('iq-dhuhr').value)||10,Asr:parseInt(document.getElementById('iq-asr').value)||10,Maghrib:parseInt(document.getElementById('iq-maghrib').value)||5,Isha:parseInt(document.getElementById('iq-isha').value)||15};}
+function addMinToTime(ts,mins){const p=(ts||'').substring(0,5).split(':');let h=+p[0],m=+p[1]+mins;h+=Math.floor(m/60);m=m%60;return String(h%24).padStart(2,'0')+':'+String(m).padStart(2,'0');}
+
+function announceAdhanFull(prayer,time){
+  const lang=adhanAnnounceLang;
+  const pName=PRAYER_NAMES_ANNOUNCE[lang][prayer.key]||prayer.ar;
+  const mosqueName=(document.getElementById('tog-mosque-name').checked&&currentData.mosque)?currentData.mosque.name:'';
+  let text='';
+  if(lang==='ar')text=`الله أكبر. حان وقت صلاة ${pName}${mosqueName?` في مسجد ${mosqueName}`:''}.`;
+  else if(lang==='fr')text=`Allahu Akbar. Il est l'heure de la prière du ${pName}${mosqueName?` à la mosquée ${mosqueName}`:''}.`;
+  else text=`Allahu Akbar. It is time for ${pName} prayer${mosqueName?` at ${mosqueName} mosque`:''}.`;
+  // Banner
+  const ar=PRAYER_NAMES_ANNOUNCE['ar'][prayer.key]||prayer.ar;
+  document.getElementById('aa-prayer-name').textContent=ar;
+  document.getElementById('aa-sub').textContent=lang==='fr'?`Heure de la prière du ${pName}`:lang==='en'?`Time for ${pName} prayer`:'حان وقت الصلاة';
+  document.getElementById('adhan-announce').style.display='block';
+  // TTS
+  if(document.getElementById('tog-adhan').checked){
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);u.lang=ADHAN_LANG_CODES[lang];u.rate=0.87;
+    window.speechSynthesis.speak(u);
+  }
+}
+
+function triggerVibration(prayerAr){
+  const badge=document.getElementById('vib-badge');
+  badge.textContent=`📳 تنبيه: صلاة ${prayerAr} بعد ${document.getElementById('vib-mins').value||15} دقيقة`;
+  badge.style.display='block';
+  if(navigator.vibrate)navigator.vibrate([300,200,300,200,500]);
+  setTimeout(()=>{badge.style.display='none';},7000);
+}
+
+function testAdhan(){
+  announceAdhanFull({key:'Maghrib',ar:'المغرب'},'19:00');
+}
+
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+
 const d2r=d=>d*Math.PI/180;
 function haversineKm(la1,lo1,la2,lo2){const R=6371,a=Math.sin(d2r(la2-la1)/2)**2+Math.cos(d2r(la1))*Math.cos(d2r(la2))*Math.sin(d2r(lo2-lo1)/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
 function fmtDist(d){return d<1?`${Math.round(d*1000)} م`:`${d.toFixed(1)} كم`;}
 function fmtTime(d){
-  const car=Math.round(d/60*60);    // 60km/h → minutes
-  const walk=Math.round(d/5*60);    // 5km/h → minutes
+  const car=Math.round((d/60)*60);  // (km ÷ 60km/h) × 60min = minutes en voiture
+  const walk=Math.round((d/5)*60);  // (km ÷ 5km/h) × 60min = minutes à pied
   const carTxt=car<60?`${car}د`:`${Math.floor(car/60)}س${car%60}د`;
   const walkTxt=walk<60?`${walk}د`:`${Math.floor(walk/60)}س${walk%60}د`;
   return `🚗${carTxt} · 🚶${walkTxt}`;
@@ -464,7 +590,7 @@ function voiceReorder(text){
   const typeMap={
     'مسجد':'mosque','جامع':'mosque','صلاة':'mosque','mosquée':'mosque','mosquee':'mosque',
     'صراف':'atm','بنك':'atm','فلوس':'atm','distributeur':'atm','dab':'atm',
-    'صيدلية':'atm','دواء':'pharm','pharmacie':'pharm','pharma':'pharm',
+    'صيدلية':'pharm','دواء':'pharm','pharmacie':'pharm','pharma':'pharm',
     'وقود':'gas','بنزين':'gas','محطة':'gas','station':'gas','essence':'gas',
   };
   let foundType=null,foundPos=null;
@@ -497,27 +623,26 @@ const i18n={
 
 function unlockAudio(){
   try{const ctx=new (window.AudioContext||window.webkitAudioContext)();const buf=ctx.createBuffer(1,1,22050);const src=ctx.createBufferSource();src.buffer=buf;src.connect(ctx.destination);src.start(0);}catch(e){}
-  const u=new SpeechSynthesisUtterance(' ');u.volume=0;window.speechSynthesis.speak(u);
-  document.removeEventListener('click',unlockAudio);
-  document.removeEventListener('touchstart',unlockAudio);
-  setTimeout(startMonologue,800);
+  if(window.speechSynthesis&&window.SpeechSynthesisUtterance){const u=new SpeechSynthesisUtterance(' ');u.volume=0;window.speechSynthesis.speak(u);}
+  loadMaleVoice(); // s'assurer que la voix est chargée avant le monologue
+  setTimeout(startMonologue,1000);
 }
 // Déverrouillage au premier contact — invisible pour l'utilisateur
 document.addEventListener('click',unlockAudio,{once:true});
 document.addEventListener('touchstart',unlockAudio,{once:true});
 
 function stopAllSpeech(){window.speechSynthesis.cancel();document.getElementById('stop-btn').style.display='none';}
-let currentPresenter={lang:'ar-SA',name:'عادل بوغزالة'};
+let currentPresenter={lang:'ar-SA',name:'عادل غريب'};
 
 const PRESENTER_INTROS={
-  'عادل بوغزالة':'مرحبا — أنا عادل بوغزالة، في خدمتكم',
+  'عادل غريب':'مرحبا — أنا عادل غريب، في خدمتكم',
   'صلاح الدين غلاب':'السلام عليكم — أنا صلاح الدين غلاب، في خدمتكم',
   'Henry Le Grand':'Bonjour, je suis Henry Le Grand, à votre service',
   'Jack Smith':'Hello, I am Jack Smith, at your service',
 };
 
 const PRESENTER_REPORTS={
-  'عادل بوغزالة':{atm:'أقرب صراف آلي هو',gas:'أقرب محطة وقود هي',pharm:'أقرب صيدلية هي',mosque:'أقرب مسجد هو',dist:'على بعد',time:'والوقت بالسيارة',min:'دقيقة'},
+  'عادل غريب':{atm:'أقرب صراف آلي هو',gas:'أقرب محطة وقود هي',pharm:'أقرب صيدلية هي',mosque:'أقرب مسجد هو',dist:'على بعد',time:'والوقت بالسيارة',min:'دقيقة'},
   'صلاح الدين غلاب':{atm:'أقرب صراف آلي هو',gas:'أقرب محطة وقود هي',pharm:'أقرب صيدلية هي',mosque:'أقرب مسجد هو',dist:'على مسافة',time:'والوقت المقدر',min:'دقيقة'},
   'Henry Le Grand':{atm:'Le distributeur le plus proche est',gas:'La station la plus proche est',pharm:'La pharmacie la plus proche est',mosque:'La mosquée la plus proche est',dist:'à',time:'durée estimée',min:'minutes'},
   'Jack Smith':{atm:'Nearest ATM is',gas:'Nearest gas station is',pharm:'Nearest pharmacy is',mosque:'Nearest mosque is',dist:'at',time:'estimated time',min:'minutes'},
@@ -539,25 +664,25 @@ function setPresenter(btn){
   toast(`✦ ${name}`);
 }
 function loadMaleVoice(){
+  if(!window.speechSynthesis)return;
   const voices=window.speechSynthesis.getVoices();
-  // Cherche une voix arabe masculine
   const arVoices=voices.filter(v=>v.lang.startsWith('ar'));
-  // Noms de voix masculines connues
   const maleNames=['Majed','Maged','Tarik','Khalid','Omar','male','Male','man'];
   maleVoice=arVoices.find(v=>maleNames.some(n=>v.name.includes(n)))
     ||arVoices.find(v=>!v.name.toLowerCase().includes('female')&&!v.name.includes('Laila')&&!v.name.includes('Rana')&&!v.name.includes('Fatima')&&!v.name.includes('Sara'))
     ||arVoices[0]||null;
 }
-window.speechSynthesis.onvoiceschanged=loadMaleVoice;
+if(window.speechSynthesis)window.speechSynthesis.onvoiceschanged=loadMaleVoice;
 loadMaleVoice();
 
 function speak(text,lang){
+  if(!window.speechSynthesis||!window.SpeechSynthesisUtterance)return;
   window.speechSynthesis.cancel();
   setTimeout(()=>{
     const u=new SpeechSynthesisUtterance(text);
     u.lang=lang||'ar-SA';
     u.rate=0.88;
-    if(maleVoice)u.voice=maleVoice;
+    if(maleVoice&&(lang==='ar-SA'||!lang))u.voice=maleVoice; // voix arabe uniquement pour l'arabe
     u.onstart=()=>document.getElementById('stop-btn').style.display='block';
     u.onend=u.onerror=()=>document.getElementById('stop-btn').style.display='none';
     window.speechSynthesis.speak(u);
@@ -566,13 +691,13 @@ function speak(text,lang){
 
 function playAutoSpeech(){
   const lang=currentPresenter.lang;
-  const dict=PRESENTER_REPORTS[currentPresenter.name]||PRESENTER_REPORTS['عادل'];
+  const dict=PRESENTER_REPORTS[currentPresenter.name]||PRESENTER_REPORTS['عادل غريب'];
   let text='';
   ['atm','gas','pharm','mosque'].forEach(type=>{
     if(currentData[type]){
       const d=currentData[type];
       const dTxt=d.dist<1?`${Math.round(d.dist*1000)} م`:`${d.dist.toFixed(1)} كم`;
-      const tTxt=Math.round(d.dist/60*60);
+      const tTxt=Math.round((d.dist/60)*60);
       text+=`${dict[type]} ${d.name}، ${dict.dist} ${dTxt}، ${dict.time} ${tTxt} ${dict.min}. ${d.extra||''}. `;
     }
   });
@@ -583,13 +708,13 @@ function playAutoSpeech(){
 function speakRoute(){
   if(!routeStops.length){toast('المسار فارغ');return;}
   const lang=currentPresenter.lang;
-  const dict=PRESENTER_REPORTS[currentPresenter.name]||PRESENTER_REPORTS['عادل'];
+  const dict=PRESENTER_REPORTS[currentPresenter.name]||PRESENTER_REPORTS['عادل غريب'];
   let text=lang==='ar-SA'?'مسارك يمر بـ: ':lang==='fr-FR'?'Votre itinéraire: ':'Your route: ';
   routeStops.forEach((s,i)=>{
     if(!currentData[s])return;
     const d=currentData[s];
     const dTxt=d.dist<1?`${Math.round(d.dist*1000)} م`:`${d.dist.toFixed(1)} كم`;
-    const tTxt=Math.round(d.dist/60*60);
+    const tTxt=Math.round((d.dist/60)*60);
     text+=`${i+1}. ${CFG[s].label} ${d.name}، ${dict.dist} ${dTxt}، ${dict.time} ${tTxt} ${dict.min}. `;
   });
   speak(text,lang);
@@ -647,11 +772,23 @@ function _renderStrip(){
   const mins=PRAYER_KEYS.map(p=>_toMin(_pd.timings[p.key]||'00:00'));
   for(let i=mins.length-1;i>=0;i--){if(nowM>=mins[i]){aIdx=i;break;}}
   nIdx=(aIdx<mins.length-1)?aIdx+1:0;
+  const iqM=getIqMins();
+  const vibMins=parseInt(document.getElementById('vib-mins').value)||15;
   strip.innerHTML=PRAYER_KEYS.map((p,i)=>{
     const t=(_pd.timings[p.key]||'--:--').substring(0,5);
+    const iqTime=t!=='--:--'?addMinToTime(t,iqM[p.key]||10):'--:--';
     const isA=i===aIdx,isN=i===nIdx&&aIdx!==-1;
-    return`<div class="prayer-cell${isA?' active':''}${isN?' next-prayer':''}"><span class="pc-icon">${PRAYER_ICONS[p.key]}</span><span class="pc-name">${p.ar}</span><span class="pc-time">${t}</span>${isN?'<span class="pc-badge">التالي</span>':''}</div>`;
+    return`<div class="prayer-cell${isA?' active':''}${isN?' next-prayer':''}"><span class="pc-icon">${PRAYER_ICONS[p.key]}</span><span class="pc-name">${p.ar}</span><span class="pc-time">${t}</span><span class="pc-iq-label">إقامة</span><span class="pc-iqama">${iqTime}</span>${isN?'<span class="pc-badge">التالي</span>':''}</div>`;
   }).join('');
+  // Vibration check (N minutes before adhan)
+  PRAYER_KEYS.forEach(p=>{
+    const pM=_toMin(_pd.timings[p.key]||'00:00');
+    const diffMin=(pM-nowM+1440)%1440;
+    const vibKey=p.key+'_vib_'+new Date().toDateString();
+    if(diffMin<=vibMins&&diffMin>vibMins-1&&document.getElementById('tog-vib').checked&&_lastVibKey!==vibKey){
+      _lastVibKey=vibKey;triggerVibration(p.ar);
+    }
+  });
   // Adhan trigger at exact prayer time
   const nowSec=now.getSeconds();
   PRAYER_KEYS.forEach(p=>{
@@ -659,6 +796,9 @@ function _renderStrip(){
     if(nowM===pM&&nowSec<30){
       const t=(_pd.timings[p.key]||'').substring(0,5);
       _triggerAdhan(p,t);
+      // New multi-lang announce
+      const adhanKey=p.key+'_ann_'+new Date().toDateString();
+      if(_lastAdhanKey!==adhanKey){_lastAdhanKey=adhanKey;announceAdhanFull(p,t);}
     }
   });
   try{const h=_pd.date&&_pd.date.hijri;if(h)document.getElementById('prayer-hijri').textContent=`${h.day} ${h.month.ar}`;}catch(e){}
@@ -684,7 +824,7 @@ async function initPrayer(lat,lon){
 
 async function executeUnifiedPipeline(lat,lon){
   const _now=Date.now();if(_now-lastUpdate<20000&&lastUpdate!==0)return;lastUpdate=_now;
-  document.getElementById('gps-status').textContent=`EXEC: LAT ${lat.toFixed(4)} | LON ${lon.toFixed(4)}`;
+  document.getElementById('gps-status').textContent=`📍 ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
   stopAllSpeech();
   await queryNominatim(lat,lon,'atm','atm');await new Promise(r=>setTimeout(r,1100));
   await queryNominatim(lat,lon,'fuel','gas');await new Promise(r=>setTimeout(r,1100));
@@ -699,8 +839,8 @@ function renderRoute(){
   const el=document.getElementById('route-stops');
   const ob=document.getElementById('open-route-btn');
   const sb=document.getElementById('speak-route-btn');
-  if(!routeStops.length){el.innerHTML='<div class="stop-empty">أضف وجهات من البطاقات أو اختر مقترحاً</div>';ob.disabled=sb.disabled=true;return;}
-  ob.disabled=sb.disabled=false;
+  if(!el)return; // elements not in HTML, skip gracefully
+  if(ob)ob.disabled=false;if(sb)sb.disabled=false;
   el.innerHTML=routeStops.map((s,i)=>{
     const d=currentData[s];const c=CFG[s];
     const dTxt=d?`${fmtDist(d.dist)} · ${fmtTime(d.dist)}`:'—';
@@ -712,7 +852,7 @@ function addToRoute(type){
   if(routeStops.includes(type)){toast('✦ موجود بالفعل في المسار');return;}
   if(!currentData[type]){toast('⚠️ انتظر تحميل البيانات');return;}
   routeStops.push(type);renderRoute();
-  const b=document.getElementById(`add-${type}`);b.textContent='✔ تمت الإضافة';b.classList.add('added');
+  const b=document.getElementById(`add-${type}`);if(b){b.textContent='✔ تمت الإضافة';b.classList.add('added');}
   toast(`✦ تمت إضافة ${CFG[type].label}`);
 }
 function removeStop(idx){
@@ -735,7 +875,7 @@ function openRoute(){
   window.open(`https://www.google.com/maps/dir/?api=1&destination=${last.lat},${last.lon}&waypoints=${encodeURIComponent(wps)}&travelmode=driving`,'_blank');
 }
 
-let recognition=null,isListening=false;
+let recognition=null,isListening=false,maleVoice=null;
 const VOICE_KW={
   // ATM - arabe/tunisien/français
   'صراف':'atm','بنك':'atm','فلوس':'atm','كاش':'atm','صرّاف':'atm',
@@ -786,67 +926,424 @@ function tellJoke(){
 const ROUTE_TRIGGER=['مسار','اذهب','روحني','خليني','نروحو','طريق','وين','حبيت نروح','نحتاج','بش نروح','itinéraire','itineraire','route','aller','chemin','comment aller','je veux aller','emmène','emmene'];
 
 function toggleVoice(){if(isListening)stopVoice();else startVoice();}
+
 function startVoice(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){toast('⚠️ متصفحك لا يدعم الصوت');return;}
-  recognition=new SR();
-  recognition.lang=currentPresenter.lang;
-  recognition.continuous=false;recognition.interimResults=true;
-  recognition.onstart=()=>{
-    isListening=true;
-    document.getElementById('voice-btn').classList.add('listening');
-    document.getElementById('v-icon').textContent='';
-    document.getElementById('v-label').innerHTML='<div class="mic-wave"><span></span><span></span><span></span><span></span><span></span></div>';
-    document.getElementById('voice-transcript').style.display='block';
-    document.getElementById('voice-transcript').textContent='🎙️ أسمعك...';
-    // Le présentateur dit "j'écoute" dans les 4 langues
-    const listeningLines=[
-      {text:'أسمعك',lang:'ar-SA'},
-      {text:'Je vous écoute',lang:'fr-FR'},
-      {text:"I'm listening",lang:'en-US'},
-    ];
-    let t=0;
-    listeningLines.forEach(l=>{
-      setTimeout(()=>{
-        const u=new SpeechSynthesisUtterance(l.text);
-        u.lang=l.lang;u.rate=0.9;
-        if(maleVoice&&l.lang==='ar-SA')u.voice=maleVoice;
-        window.speechSynthesis.speak(u);
-      },t);
-      t+=1200;
-    });
-  };
-  recognition.onresult=e=>{
-    const txt=Array.from(e.results).map(r=>r[0].transcript).join('');
-    document.getElementById('voice-transcript').textContent=`"${txt}"`;
-    if(e.results[e.results.length-1].isFinal)processVoice(txt);
-  };
-  recognition.onerror=recognition.onend=()=>stopVoice();
-  recognition.start();
+  if(!SR){toast('⚠️ متصفحك لا يدعم الصوت — استخدم Chrome');return;}
+
+  window.speechSynthesis.cancel();
+  isListening=false;
+
+  // UI
+  document.getElementById('voice-btn').classList.add('listening');
+  document.getElementById('v-icon').textContent='';
+  document.getElementById('v-label').innerHTML='<div class="mic-wave"><span></span><span></span><span></span><span></span><span></span></div>';
+  document.getElementById('voice-transcript').style.display='block';
+  document.getElementById('voice-transcript').textContent='🎙️ جاري الاستماع...';
+
+  // Greeting in presenter lang only (short, before mic opens)
+  const greetTexts={'ar-SA':'أسمعك','fr-FR':'Je vous écoute','en-US':"I'm listening"};
+  const greetText=greetTexts[currentPresenter.lang]||'أسمعك';
+  const greetU=new SpeechSynthesisUtterance(greetText);
+  greetU.lang=currentPresenter.lang; greetU.rate=1.1;
+  if(maleVoice&&currentPresenter.lang==='ar-SA')greetU.voice=maleVoice;
+
+  let resultReceived=false; // flag to prevent onend from firing before onresult
+
+  let recognitionStarted=false;
+  function doStartRecognition(){
+    if(recognitionStarted)return;
+    recognitionStarted=true;
+    recognition=new SR();
+    // Accept ALL languages — let browser detect automatically
+    recognition.lang=currentPresenter.lang;
+    recognition.continuous=false;
+    recognition.interimResults=true;
+    recognition.maxAlternatives=3;
+
+    recognition.onstart=()=>{ isListening=true; };
+
+    recognition.onresult=e=>{
+      resultReceived=true;
+      const results=e.results[e.results.length-1];
+      // Pick best transcript
+      const txt=results[0].transcript;
+      document.getElementById('voice-transcript').textContent=`"${txt}"`;
+      if(results.isFinal){
+        stopVoice();
+        processVoice(txt);
+      }
+    };
+
+    recognition.onerror=e=>{
+      console.warn('[Voice] error:',e.error);
+      stopVoice();
+      if(e.error==='no-speech'){
+        const noSpeechMsg={'ar-SA':'لم أسمعك، حاول مرة أخرى','fr-FR':'Je n\'ai pas entendu, réessayez','en-US':'I didn\'t hear you, try again'};
+        speak(noSpeechMsg[currentPresenter.lang]||noSpeechMsg['ar-SA'],currentPresenter.lang);
+      } else if(e.error==='not-allowed'){
+        toast('⚠️ يرجى السماح باستخدام الميكروفون');
+      }
+    };
+
+    recognition.onend=()=>{
+      // Only stop UI if no result was being processed
+      if(!resultReceived) stopVoice();
+    };
+
+    try{ recognition.start(); }catch(err){ console.error('[Voice] start error:',err); stopVoice(); }
+  }
+
+  // Wait for greeting to finish, then open mic
+  greetU.onend=()=>{ setTimeout(doStartRecognition, 150); };
+  greetU.onerror=()=>{ setTimeout(doStartRecognition, 150); };
+  // Fallback: if TTS hangs (iOS), open mic after 1.5s anyway
+  setTimeout(()=>{ if(!isListening) doStartRecognition(); }, 1500);
+  window.speechSynthesis.speak(greetU);
 }
+
 function stopVoice(){
-  isListening=false;if(recognition)try{recognition.stop();}catch(e){}
+  isListening=false;
+  if(recognition){try{recognition.abort();}catch(e){} recognition=null;}
   document.getElementById('voice-btn').classList.remove('listening');
   document.getElementById('v-icon').textContent='🎙️';
   document.getElementById('v-label').textContent='تكلّم — قل ما تريده';
 }
+
 function speakAllLangs(ar, fr, en){
-  const lines=[
-    {text:ar, lang:'ar-SA'},
-    {text:fr, lang:'fr-FR'},
-    {text:en, lang:'en-US'},
-  ];
-  let t=300;
-  lines.forEach(l=>{
-    setTimeout(()=>{
-      const u=new SpeechSynthesisUtterance(l.text);
-      u.lang=l.lang;u.rate=0.88;
-      if(maleVoice&&l.lang==='ar-SA')u.voice=maleVoice;
-      window.speechSynthesis.speak(u);
-    },t);
-    t+=2200;
-  });
+  // Respond ONLY in current presenter lang — not all 3 at once
+  const lang=currentPresenter.lang;
+  const text=lang==='fr-FR'?fr:lang==='en-US'?en:ar;
+  speak(text,lang);
 }
+
+// ══ الجزري SILENT ENGINE — LORD SIDHOM STANDARD GUARD ══
+const JAZARI_MASTER = { name: 'لورد سيدهم', rank: 'LORD SIDHOM I' };
+
+const JAZARI_KB_SILENT = [
+  { q:['من أنت','qui es tu','who are you','عرّف نفسك'], a:{ar:`أنا الجزري — ذكاء اصطناعي من إنتاج ${JAZARI_MASTER.rank}. عربي مئة بالمئة، الأذكى والأسرع. في خدمتك سيدي.`, fr:`Je suis Al-Jazari, intelligence artificielle créée par ${JAZARI_MASTER.rank}. À votre service.`, en:`I am Al-Jazari, AI created by ${JAZARI_MASTER.rank}. At your service.`}},
+  { q:['كيف حالك','comment tu vas','how are you'], a:{ar:`بخير الحمد لله — في خدمة ${JAZARI_MASTER.name}. وأنت؟`,fr:'Très bien, à votre service.',en:'Very well, at your service.'}},
+  { q:['مرحبا','بونجور','bonjour','hello','سلام','أهلا'], a:{ar:'وعليكم السلام! اسألني ما تشاء.',fr:'Bonjour! Comment puis-je vous aider?',en:'Hello! How can I help you?'}},
+  { q:['شكرا','merci','thank','يعيشك'], a:{ar:'على الرحب والسعة سيدي.',fr:'Avec plaisir.',en:"You're welcome."}},
+  { q:['الوقت','كم الساعة','quelle heure','what time'], a:{ar:`الوقت الآن ${new Date().toLocaleTimeString('ar-SA')}`,fr:`Il est ${new Date().toLocaleTimeString('fr-FR')}`,en:`It is ${new Date().toLocaleTimeString('en-US')}`}},
+  { q:['مسار','اقترح','itinéraire','itineraire','نروحو','خليني نروح','روحني','كيفاش نروح'], a:'itinerary'},
+];
+
+function jazariTryMath(text){
+  try{
+    let e=text.replace(/×/g,'*').replace(/÷/g,'/')
+      .replace(/racine de (\d+\.?\d*)/gi,(_,n)=>`Math.sqrt(${n})`)
+      .replace(/√(\d+\.?\d*)/g,(_,n)=>`Math.sqrt(${n})`)
+      .replace(/جذر\s*(\d+\.?\d*)/g,(_,n)=>`Math.sqrt(${n})`)
+      .replace(/\^/g,'**').replace(/pi/gi,'Math.PI')
+      .replace(/fois/gi,'*').replace(/plus/gi,'+').replace(/moins/gi,'-')
+      .replace(/مضروب/g,'*').replace(/ناقص/g,'-')
+      .replace(/(\d+)!/g,(_,n)=>{let r=1;for(let i=2;i<=+n;i++)r*=i;return r;});
+    if(!/\d/.test(e))return null;
+    // eslint-disable-next-line no-new-func
+    const r=Function('"use strict";return('+e+')')();
+    if(!isFinite(r)||isNaN(r))return null;
+    return parseFloat(r.toPrecision(10));
+  }catch(e){return null;}
+}
+
+function jazariSpeakVoice(text, lang) {
+  if(!window.speechSynthesis||!window.SpeechSynthesisUtterance) return;
+  window.speechSynthesis.cancel();
+  setTimeout(()=>{
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang=(typeof JAZARI_LANG_CODES!=='undefined'?JAZARI_LANG_CODES[lang]:null)||currentPresenter.lang||'ar-SA';
+    u.rate=0.87;
+    if(maleVoice&&(lang==='ar'||lang==='ar-SA'))u.voice=maleVoice;
+    u.onstart=()=>{const b=document.getElementById('stop-btn');if(b)b.style.display='block';};
+    u.onend=u.onerror=()=>{const b=document.getElementById('stop-btn');if(b)b.style.display='none';};
+    window.speechSynthesis.speak(u);
+  },200);
+}
+
+function jazariDetectLang(text){
+  if((text.match(/[؀-ۿ]/g)||[]).length>2)return 'ar';
+  if(/(je|tu|il|nous|vous|le|la|les|est|bonjour|merci|comment|qui)/i.test(text))return 'fr';
+  return 'en';
+}
+
+function jazariOpenMaps(route) {
+  if (!route.length) return;
+  if (route.length === 1) {
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${route[0].data.lat},${route[0].data.lon}&travelmode=driving`,'_blank');
+    return;
+  }
+  const last = route[route.length-1];
+  const wps = route.slice(0,-1).map(s=>`${s.data.lat},${s.data.lon}`).join('|');
+  window.open(`https://www.google.com/maps/dir/?api=1&destination=${last.data.lat},${last.data.lon}&waypoints=${encodeURIComponent(wps)}&travelmode=driving`,'_blank');
+}
+
+// ── DEMAND-BASED ROUTE BUILDER ──
+// Keywords for each service in all 11 languages
+const JAZARI_SERVICE_WORDS = {
+  mosque: ['مسجد','جامع','صلاة','نصلي','mosque','mosquée','moschee','mezquita','moschea','mesquita','moskee','мечеть','清真寺','モスク'],
+  gas:    ['محطة','بنزين','وقود','تعبية','عبي','station','essence','carburant','tankstelle','gasolinera','stazione','posto','tankstation','заправка','加油站','ガソリンスタンド'],
+  pharm:  ['صيدلية','دواء','دوا','pharmacie','pharmacy','apotheke','farmacia','farmácia','apotheek','аптека','药店','薬局'],
+  atm:    ['صراف','بنك','فلوس','distributeur','dab','atm','geldautomat','cajero','bancomat','caixa','geldautomaat','банкомат','取款机','ATM'],
+};
+
+// Parse what the user wants and in what order
+function jazariParseRoute(text) {
+  const lower = text.toLowerCase();
+  const found = [];
+  // Find each service mentioned and its position in the text
+  for (const [type, words] of Object.entries(JAZARI_SERVICE_WORDS)) {
+    for (const word of words) {
+      const idx = lower.indexOf(word);
+      if (idx !== -1 && !found.find(f=>f.type===type)) {
+        found.push({ type, idx });
+        break;
+      }
+    }
+  }
+  // Sort by order of mention in the text
+  found.sort((a,b) => a.idx - b.idx);
+  return found.map(f => f.type);
+}
+
+function jazariBuildItinerary(lang) {
+  return null; // placeholder — real work done in jazariHandleUnknown
+}
+
+
+// ══ JAZARI NATURAL LANGUAGE UNDERSTANDING ══
+const JAZARI_INTENT_WORDS = {
+  mosque: ['صلي','صلاة','أصلي','نصلي','نروح نصلو','أداء الصلاة','prier','prière','prayer','beten','rezar','pregare','rezar','bidden','молиться','pray','worship','فجر','ظهر','عصر','مغرب','عشاء','جمعة'],
+  gas:    ['بنزين','تعبية','رملي البلاصة','نعبي','plain','plein','رملي','faire le plein','fill up','tanken','llenar','rifornire','abastecer','tanken','заправиться','carburant','essence','fuel','gas'],
+  pharm:  ['دواء','دوا','حبوب','نشري دواء','أشتري دواء','médicament','acheter des médicaments','medicine','buy medicine','medikament','medicamento','medicina','medicamento','medicijn','лекарство','drugs'],
+  atm:    ['فلوس','نسحب','نخرج فلوس','argent','retirer','withdraw','geld abheben','dinero','soldi','dinheiro','geld','деньги','cash','money'],
+};
+
+const JAZARI_TIME_WORDS = {
+  ar: { hour:'ساعة', minute:'دقيقة', half:'نص ساعة', quarter:'ربع ساعة' },
+  fr: { hour:'heure', minute:'minute', half:'demi-heure', quarter:'quart d'heure' },
+  en: { hour:'hour', minute:'minute', half:'half hour', quarter:'quarter hour' },
+};
+
+// Estimated time per service (minutes)
+const JAZARI_SERVICE_TIME = {
+  mosque: 25,  // prayer ~25 min
+  gas:    8,   // fill up ~8 min
+  pharm:  10,  // pharmacy ~10 min
+  atm:    5,   // ATM ~5 min
+};
+
+function jazariExtractTime(text) {
+  const lower = text.toLowerCase();
+  // Extract hours and minutes from natural language
+  let totalMin = 0;
+
+  // "ساعة ونص" / "une heure et demie" / "1.5 hours"
+  if (/ساعة\s*ونص|ساعة\s*و\s*نص|heure\s*et\s*demi|1\.5\s*hour|hour\s*and\s*half/.test(lower)) return 90;
+  if (/ساعتين|deux\s*heures|2\s*hours|two\s*hours/.test(lower)) return 120;
+  if (/ثلاث\s*ساعات|trois\s*heures|3\s*hours/.test(lower)) return 180;
+
+  // Extract number + unit
+  const hourMatch = lower.match(/(\d+)\s*(?:ساعة|ساعات|heure|heures|hour|hours)/);
+  const minMatch  = lower.match(/(\d+)\s*(?:دقيقة|دقائق|minute|minutes|min)/);
+
+  if (hourMatch) totalMin += parseInt(hourMatch[1]) * 60;
+  if (minMatch)  totalMin += parseInt(minMatch[1]);
+
+  // Single word time
+  if (!totalMin) {
+    if (/ساعة|une heure|an hour|one hour/.test(lower)) totalMin = 60;
+    if (/نص ساعة|demi-heure|half hour/.test(lower)) totalMin = 30;
+    if (/ربع ساعة|quart d'heure|quarter hour/.test(lower)) totalMin = 15;
+  }
+
+  return totalMin || 0;
+}
+
+function jazariParseNaturalRequest(text) {
+  const lower = text.toLowerCase();
+  const found = [];
+
+  for (const [type, words] of Object.entries(JAZARI_INTENT_WORDS)) {
+    for (const word of words) {
+      if (lower.includes(word) && !found.find(f=>f.type===type)) {
+        found.push({ type, idx: lower.indexOf(word) });
+        break;
+      }
+    }
+  }
+
+  // Also check service words from JAZARI_SERVICE_WORDS
+  for (const [type, words] of Object.entries(JAZARI_SERVICE_WORDS)) {
+    if (!found.find(f=>f.type===type)) {
+      for (const word of words) {
+        if (lower.includes(word)) {
+          found.push({ type, idx: lower.indexOf(word) });
+          break;
+        }
+      }
+    }
+  }
+
+  // Sort by order of mention
+  found.sort((a,b)=>a.idx-b.idx);
+  return found.map(f=>f.type).filter(t=>currentData[t]);
+}
+
+function jazariBuildNaturalResponse(types, timeAvailable, lang) {
+  const route = types.map(t=>({
+    type: t,
+    data: currentData[t],
+    label: CFG[t].label,
+    serviceMin: JAZARI_SERVICE_TIME[t] || 10,
+  }));
+
+  // Calculate total time
+  let totalTravelMin = 0;
+  let totalServiceMin = 0;
+  route.forEach(s => {
+    totalTravelMin += Math.round((s.data.dist/60)*60);
+    totalServiceMin += s.serviceMin;
+  });
+  const totalNeeded = totalTravelMin + totalServiceMin;
+  const timeLeft = timeAvailable > 0 ? timeAvailable - totalNeeded : null;
+  const feasible = timeAvailable > 0 ? totalNeeded <= timeAvailable : true;
+
+  const texts = {
+    ar: () => {
+      let s = feasible
+        ? `حسناً سيدي، المسار مناسب لوقتك. `
+        : `سيدي، الوقت ضيق قليلاً — المقدّر ${totalNeeded} دقيقة. لكن إليك أفضل مسار. `;
+      route.forEach((r,i) => {
+        const tCar = Math.round((r.data.dist/60)*60);
+        s += `${i+1}. ${r.label} ${r.data.name}، ${r.data.dist.toFixed(1)} كيلومتر، ${tCar} دقيقة تنقل، ${r.serviceMin} دقيقة تقريباً. `;
+      });
+      s += `الوقت الإجمالي المقدر ${totalNeeded} دقيقة. `;
+      if (timeLeft !== null && timeLeft > 0) s += `يبقى لك ${timeLeft} دقيقة. `;
+      s += `جاري فتح الخريطة.`;
+      return s;
+    },
+    fr: () => {
+      let s = feasible
+        ? `D'accord, l'itinéraire est adapté à votre temps. `
+        : `Monsieur, le temps est un peu serré — estimation ${totalNeeded} minutes. Voici le meilleur itinéraire. `;
+      route.forEach((r,i) => {
+        const tCar = Math.round((r.data.dist/60)*60);
+        s += `${i+1}. ${r.label} ${r.data.name}, ${r.data.dist.toFixed(1)} km, ${tCar} min de trajet, environ ${r.serviceMin} min sur place. `;
+      });
+      s += `Temps total estimé ${totalNeeded} minutes. `;
+      if (timeLeft !== null && timeLeft > 0) s += `Il vous restera ${timeLeft} minutes. `;
+      s += `Ouverture de la carte.`;
+      return s;
+    },
+    en: () => {
+      let s = feasible
+        ? `OK, the route fits your time. `
+        : `Sir, time is a bit tight — estimated ${totalNeeded} minutes. Here's the best route. `;
+      route.forEach((r,i) => {
+        const tCar = Math.round((r.data.dist/60)*60);
+        s += `${i+1}. ${r.label} ${r.data.name}, ${r.data.dist.toFixed(1)} km, ${tCar} min travel, about ${r.serviceMin} min on site. `;
+      });
+      s += `Total estimated time ${totalNeeded} minutes. `;
+      if (timeLeft !== null && timeLeft > 0) s += `You'll have ${timeLeft} minutes left. `;
+      s += `Opening map.`;
+      return s;
+    },
+    de: () => `OK. Route: ${route.map((r,i)=>`${i+1}. ${r.label} ${r.data.name}`).join('. ')}. Geschätzte Zeit ${totalNeeded} Minuten. Karte wird geöffnet.`,
+    es: () => `De acuerdo. Ruta: ${route.map((r,i)=>`${i+1}. ${r.label} ${r.data.name}`).join('. ')}. Tiempo estimado ${totalNeeded} minutos. Abriendo mapa.`,
+    it: () => `OK. Percorso: ${route.map((r,i)=>`${i+1}. ${r.label} ${r.data.name}`).join('. ')}. Tempo stimato ${totalNeeded} minuti. Apertura mappa.`,
+    pt: () => `OK. Rota: ${route.map((r,i)=>`${i+1}. ${r.label} ${r.data.name}`).join('. ')}. Tempo estimado ${totalNeeded} minutos. Abrindo mapa.`,
+    nl: () => `OK. Route: ${route.map((r,i)=>`${i+1}. ${r.label} ${r.data.name}`).join('. ')}. Geschatte tijd ${totalNeeded} minuten. Kaart openen.`,
+    ru: () => `Хорошо. Маршрут: ${route.map((r,i)=>`${i+1}. ${r.label} ${r.data.name}`).join('. ')}. Примерное время ${totalNeeded} минут. Открываю карту.`,
+    zh: () => `好的。路线：${route.map((r,i)=>`${i+1}.${r.label}${r.data.name}`).join('。')}。预计时间${totalNeeded}分钟。正在打开地图。`,
+    ja: () => `わかりました。ルート：${route.map((r,i)=>`${i+1}.${r.label}${r.data.name}`).join('。')}。推定${totalNeeded}分。地図を開きます。`,
+  };
+
+  return (texts[lang] || texts['ar'])();
+}
+
+async function jazariHandleUnknown(text){
+  const lang=jazariDetectLang(text);
+  const lower=text.toLowerCase();
+
+// Math
+  const mathResult=jazariTryMath(text);
+  if(mathResult!==null){
+    const mathTexts={ar:`النتيجة هي ${mathResult}`,fr:`Le résultat est ${mathResult}`,en:`The result is ${mathResult}`,de:`Das Ergebnis ist ${mathResult}`,es:`El resultado es ${mathResult}`,it:`Il risultato è ${mathResult}`,pt:`O resultado é ${mathResult}`,nl:`Het resultaat is ${mathResult}`,ru:`Результат ${mathResult}`,zh:`结果是${mathResult}`,ja:`結果は${mathResult}です`};
+    jazariSpeakVoice(mathTexts[lang]||mathTexts['ar'], lang);
+    return;
+  }
+
+  // Itinerary — build from user demand
+  const itinTrigger=['مسار','اقترح','روحني','خليني نروح','كيفاش نروح','نروح','itinéraire','itineraire','route','emmène','emmene','aller','take me','bring me','navigate'];
+  const hasItinTrigger=itinTrigger.some(k=>lower.includes(k));
+  const requestedTypes=jazariParseRoute(text);
+
+  if(hasItinTrigger||requestedTypes.length>0){
+    // Build route from what user mentioned, or all available if none specified
+    const typesToUse=requestedTypes.length>0
+      ? requestedTypes.filter(t=>currentData[t])
+      : ['mosque','gas','pharm','atm'].filter(t=>currentData[t]);
+
+    if(!typesToUse.length){
+      const noData={ar:'البيانات لم تُحمَّل بعد، انتظر لحظة.',fr:'Les données ne sont pas encore chargées.',en:'Data not loaded yet, please wait.',de:'Daten noch nicht geladen.',es:'Datos no cargados aún.',it:'Dati non ancora caricati.',pt:'Dados não carregados.',nl:'Gegevens niet geladen.',ru:'Данные ещё не загружены.',zh:'数据尚未加载。',ja:'データがまだ読み込まれていません。'};
+      jazariSpeakVoice(noData[lang]||noData['ar'],lang);
+      return;
+    }
+
+    // Build spoken confirmation
+    const route=typesToUse.map(t=>({type:t,data:currentData[t],label:CFG[t].label}));
+    const totalDist=route.reduce((a,s)=>a+s.data.dist,0);
+
+    const confirmTexts={
+      ar:`حسناً سيدي. المسار: ${route.map((s,i)=>`${i+1}. ${s.label} ${s.data.name} على بعد ${s.data.dist.toFixed(1)} كيلومتر`).join('. ')}. المسافة الإجمالية ${totalDist.toFixed(1)} كيلومتر. جاري فتح الخريطة.`,
+      fr:`D'accord. Itinéraire: ${route.map((s,i)=>`${i+1}. ${s.label} ${s.data.name} à ${s.data.dist.toFixed(1)} km`).join('. ')}. Distance totale ${totalDist.toFixed(1)} km. Ouverture de la carte.`,
+      en:`OK. Route: ${route.map((s,i)=>`${i+1}. ${s.label} ${s.data.name} at ${s.data.dist.toFixed(1)} km`).join('. ')}. Total ${totalDist.toFixed(1)} km. Opening map.`,
+      de:`OK. Route: ${route.map((s,i)=>`${i+1}. ${s.label} ${s.data.name} bei ${s.data.dist.toFixed(1)} km`).join('. ')}. Karte wird geöffnet.`,
+      es:`De acuerdo. Ruta: ${route.map((s,i)=>`${i+1}. ${s.label} ${s.data.name} a ${s.data.dist.toFixed(1)} km`).join('. ')}. Abriendo mapa.`,
+      it:`OK. Percorso: ${route.map((s,i)=>`${i+1}. ${s.label} ${s.data.name} a ${s.data.dist.toFixed(1)} km`).join('. ')}. Apertura mappa.`,
+      pt:`OK. Rota: ${route.map((s,i)=>`${i+1}. ${s.label} ${s.data.name} a ${s.data.dist.toFixed(1)} km`).join('. ')}. Abrindo mapa.`,
+      nl:`OK. Route: ${route.map((s,i)=>`${i+1}. ${s.label} ${s.data.name} op ${s.data.dist.toFixed(1)} km`).join('. ')}. Kaart openen.`,
+      ru:`Хорошо. Маршрут: ${route.map((s,i)=>`${i+1}. ${s.label} ${s.data.name}`).join('. ')}. Открываю карту.`,
+      zh:`好的。路线：${route.map((s,i)=>`${i+1}.${s.label}${s.data.name}`).join('。')}。正在打开地图。`,
+      ja:`わかりました。ルート：${route.map((s,i)=>`${i+1}.${s.label}${s.data.name}`).join('。')}。地図を開きます。`,
+    };
+
+    jazariSpeakVoice(confirmTexts[lang]||confirmTexts['ar'], lang);
+    setTimeout(()=>jazariOpenMaps(route.map(r=>({data:r.data}))), 2000);
+    return;
+  }
+
+  // KB
+  for(const entry of JAZARI_KB_SILENT){
+    if(entry.a==='itinerary')continue;
+    if(entry.q.some(k=>lower.includes(k))){
+      const ans=entry.a[lang]||entry.a['ar'];
+      jazariSpeakVoice(ans,lang);
+      return;
+    }
+  }
+
+  // Wikipedia — vocal only
+  try{
+    const wl=lang==='ar'?'ar':lang==='fr'?'fr':'en';
+    const res=await fetch(`https://${wl}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(text)}`);
+    if(res.ok){
+      const d=await res.json();
+      if(d.extract&&d.extract.length>20){
+        const short=d.extract.split('.').slice(0,2).join('.')+'.';
+        jazariSpeakVoice(short,lang);
+        return;
+      }
+    }
+  }catch(e){}
+
+  // Nothing found
+  const def={ar:'لم أجد معلومات كافية — جرب سؤالاً آخر.',fr:"Je n'ai pas trouvé.",en:"I couldn't find it.",de:'Ich konnte nichts finden.',es:'No encontré información.',it:'Non ho trovato nulla.',pt:'Não encontrei.',nl:'Niets gevonden.',ru:'Ничего не найдено.',zh:'未找到信息。',ja:'情報が見つかりませんでした。'};
+  jazariSpeakVoice(def[lang]||def['ar'],lang);
+}
+
+function processVoice(text){
   const lower=text.toLowerCase();
   // لمهاف يسمع اسمه
   if(lower.includes('لمهاف')||lower.includes('lemhaf')){
@@ -874,10 +1371,10 @@ function speakAllLangs(ar, fr, en){
       if(currentData[type]){
         const d=currentData[type];
         const dTxt=d.dist<1?`${Math.round(d.dist*1000)} م`:`${d.dist.toFixed(1)} كم`;
-        const tCar=Math.round(d.dist/60*60);
-        const tWalk=Math.round(d.dist/5*60);
+        const tCar=Math.round((d.dist/60)*60);
+        const tWalk=Math.round((d.dist/5)*60);
         const nameAr=d.name;
-        const arMsg=`${PRESENTER_REPORTS['عادل بوغزالة'][type]} ${nameAr}، على بعد ${dTxt}، بالسيارة ${tCar} دقيقة، وعلى الأقدام ${tWalk} دقيقة`;
+        const arMsg=`${PRESENTER_REPORTS['عادل غريب'][type]} ${nameAr}، على بعد ${dTxt}، بالسيارة ${tCar} دقيقة، وعلى الأقدام ${tWalk} دقيقة`;
         const frMsg=`${PRESENTER_REPORTS['Henry Le Grand'][type]} ${nameAr}, à ${dTxt}, en voiture ${tCar} minutes, à pied ${tWalk} minutes`;
         const enMsg=`${PRESENTER_REPORTS['Jack Smith'][type]} ${nameAr}, at ${dTxt}, by car ${tCar} minutes, on foot ${tWalk} minutes`;
         speakAllLangs(arMsg, frMsg, enMsg);
@@ -888,9 +1385,8 @@ function speakAllLangs(ar, fr, en){
       }
     }
   }else{
-    document.getElementById('voice-transcript').textContent='🎙️ présentation des résultats...';
-    // Il ne comprend pas mais présente quand même tout dans les 3 langues
-    setTimeout(()=>presentAllResults(),400);
+    // الجزري prend le relais vocalement
+    jazariHandleUnknown(text);
   }
 }
 
@@ -908,7 +1404,7 @@ function presentAllResults(){
       const d=currentData[type];
       const dTxt=d.dist<1?`${Math.round(d.dist*1000)} م`:`${d.dist.toFixed(1)} كم`;
       const dTxtFr=d.dist<1?`${Math.round(d.dist*1000)} mètres`:`${d.dist.toFixed(1)} km`;
-      const tCar=Math.round(d.dist/60*60);
+      const tCar=Math.round((d.dist/60)*60);
       arLines.push(`${labels[type].ar} ${d.name}، على بعد ${dTxt}، بالسيارة ${tCar} دقيقة`);
       frLines.push(`${labels[type].fr} ${d.name}, à ${dTxtFr}, en voiture ${tCar} minutes`);
       enLines.push(`${labels[type].en} ${d.name}, at ${d.dist<1?Math.round(d.dist*1000)+' meters':d.dist.toFixed(1)+' km'}, by car ${tCar} minutes`);
@@ -932,24 +1428,32 @@ function forceManualExecution(){
   else toast('⚠️ إحداثيات غير صحيحة');
 }
 function startGPS(){
-  if(!navigator.geolocation){document.getElementById('gps-status').textContent='GPS SENSOR_DENIED';return;}
+  if(!navigator.geolocation){document.getElementById('gps-status').textContent='تعذّر الوصول إلى GPS';return;}
   if(gpsWatchId)navigator.geolocation.clearWatch(gpsWatchId);
   gpsWatchId=navigator.geolocation.watchPosition(
     pos=>executeUnifiedPipeline(pos.coords.latitude,pos.coords.longitude),
-    ()=>document.getElementById('gps-status').textContent='GPS SENSOR_DENIED',
+    ()=>document.getElementById('gps-status').textContent='تعذّر الوصول إلى GPS',
     {enableHighAccuracy:true,maximumAge:30000}
   );
 }
 startGPS();
+// Position par défaut Nabeul — si GPS ne répond pas après 8 secondes
+setTimeout(()=>{
+  const gpsEl=document.getElementById('gps-status');
+  if(gpsEl&&gpsEl.textContent==='جاري تحديد موقعك...'){
+    gpsEl.textContent='📍 موقع افتراضي: نابل';
+    executeUnifiedPipeline(36.4510,10.7370);
+  }
+},8000);
 
 function startMonologue() {
   const presenterName=currentPresenter.name;
   let lines=[];
 
-  if(presenterName==='عادل بوغزالة'){
+  if(presenterName==='عادل غريب'){
     lines=[
       {text:'مرحبا بيكم',delay:0},
-      {text:'أنا عادل بوغزالة، في خدمتكم',delay:2000},
+      {text:'أنا عادل غريب، في خدمتكم',delay:2000},
       {text:'هذه المنصة تلقاولكم أقرب مسجد، وصيدلية، ومحطة وقود، وصراف آلي',delay:5000},
       {text:'تنجموا ترتبوا الخدمات على حسب أولوياتكم بالسحب أو بالصوت',delay:11000},
       {text:'كلموني مباشرة وأنا نجاوبكم',delay:17000},
@@ -962,6 +1466,7 @@ function startMonologue() {
       {text:'يمكنكم ترتيب الخدمات حسب أولوياتكم بالسحب أو بالأمر الصوتي',delay:12500},
       {text:'تحدثوا إليّ مباشرة وسأكون في خدمتكم',delay:18500},
     ];
+  } else if(presenterName==='Henry Le Grand'){
     lines=[
       {text:'Bonjour',delay:0},
       {text:'Je suis Henry Le Grand, à votre service',delay:2000},
