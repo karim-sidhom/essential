@@ -512,8 +512,9 @@ function fmtTime(d){
 }
 function boundingBox(lat,lon,r=6){const lD=r/111.32,oD=r/(111.32*Math.max(Math.cos(d2r(lat)),0.1));return`${(lon-oD).toFixed(5)},${(lat-lD).toFixed(5)},${(lon+oD).toFixed(5)},${(lat+lD).toFixed(5)}`;}
 
+const GPS_ACC=150,GPS_FALLBACK_ACC=2500,GPS_AGE=120000,GPS_DIST=0.05,GPS_INITIAL_FALLBACK_MS=8000,GPS_OPT={enableHighAccuracy:true,timeout:15000,maximumAge:60000};
 const currentData={atm:null,gas:null,pharm:null,mosque:null};
-let routeStops=[],gpsWatchId=null,lastUpdate=0;
+let routeStops=[],gpsWatchId=null,currentLat=null,currentLng=null;
 
 const CFG={
   atm:{label:'الصرّاف الآلي',icon:'🏧',url:'https://dabi.kieda.online'},
@@ -822,8 +823,13 @@ async function initPrayer(lat,lon){
   if(_pt)clearInterval(_pt);_pt=setInterval(_renderStrip,1000);
 }
 
+function gpsUnavailableMessage(){const local=['localhost','127.0.0.1','::1','[::1]'].includes(location.hostname);if(!window.isSecureContext&&!local)return'⚠️ GPS وPWA يحتاجان HTTPS أو localhost. افتح التطبيق عبر رابط آمن.';return'⚠️ GPS غير مدعوم في هذا المتصفح.';}
+function gpsErrorMessage(err){if(!window.isSecureContext)return'⚠️ GPS وPWA يحتاجان HTTPS أو localhost. افتح التطبيق عبر رابط آمن.';const msgs={1:'⚠️ رُفض إذن GPS. اسمح بالموقع من إعدادات المتصفح أو أدخل الإحداثيات يدوياً.',2:'⚠️ GPS غير متاح أو الإشارة ضعيفة. يمكنك إدخال الإحداثيات يدوياً.',3:'⚠️ انتهت مهلة GPS. نحاول مجدداً.'};return(err&&msgs[err.code])||'⚠️ خطأ GPS غير معروف.';}
+function gpsQuality(p){if(!p||!p.coords)return{usable:false,accurate:false,acc:Infinity};const{latitude,longitude,accuracy}=p.coords;const acc=Number.isFinite(accuracy)?accuracy:Infinity;const age=Number.isFinite(p.timestamp)?Math.max(0,Date.now()-p.timestamp):Infinity;const valid=Number.isFinite(latitude)&&latitude>=-90&&latitude<=90&&Number.isFinite(longitude)&&longitude>=-180&&longitude<=180;return{usable:valid&&age<=GPS_AGE&&acc<=GPS_FALLBACK_ACC,accurate:valid&&age<=GPS_AGE&&acc<=GPS_ACC,acc};}
+function betterGps(a,b){if(!a)return b;return gpsQuality(b).acc<gpsQuality(a).acc?b:a;}
+function applyGps(pos,notify=true){const{latitude:nl,longitude:no,accuracy:acc}=pos.coords;const at=Number.isFinite(acc)?`${Math.round(acc)} م`:'?';const has=Number.isFinite(currentLat)&&Number.isFinite(currentLng);const dist=has?haversineKm(currentLat,currentLng,nl,no):Infinity;if(!has||dist>GPS_DIST){currentLat=nl;currentLng=no;executeUnifiedPipeline(nl,no);return true;}document.getElementById('gps-status').textContent=`📍 ${nl.toFixed(4)}, ${no.toFixed(4)} · دقة ${at}`;return false;}
+
 async function executeUnifiedPipeline(lat,lon){
-  const _now=Date.now();if(_now-lastUpdate<20000&&lastUpdate!==0)return;lastUpdate=_now;
   document.getElementById('gps-status').textContent=`📍 ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
   stopAllSpeech();
   await queryNominatim(lat,lon,'atm','atm');await new Promise(r=>setTimeout(r,1100));
@@ -1418,38 +1424,43 @@ function presentAllResults(){
 }
 
 document.getElementById('mode-select').addEventListener('change',function(e){
-  if(e.target.value==='manual'){document.getElementById('manual-inputs').style.display='flex';if(gpsWatchId)navigator.geolocation.clearWatch(gpsWatchId);}
+  if(e.target.value==='manual'){document.getElementById('manual-inputs').style.display='flex';if(gpsWatchId!==null){navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null;}}
   else{document.getElementById('manual-inputs').style.display='none';startGPS();}
 });
 function forceManualExecution(){
   const lat=parseFloat(document.getElementById('man-lat').value);
   const lon=parseFloat(document.getElementById('man-lon').value);
-  if(!isNaN(lat)&&!isNaN(lon))executeUnifiedPipeline(lat,lon);
+  if(!isNaN(lat)&&!isNaN(lon)){currentLat=lat;currentLng=lon;executeUnifiedPipeline(lat,lon);}
   else toast('⚠️ إحداثيات غير صحيحة');
 }
 function startGPS(){
-  if(!navigator.geolocation){document.getElementById('gps-status').textContent='تعذّر الوصول إلى GPS';return;}
-  if(gpsWatchId)navigator.geolocation.clearWatch(gpsWatchId);
-  const GPS_OPT={enableHighAccuracy:true,timeout:20000,maximumAge:0};
-  gpsWatchId=navigator.geolocation.watchPosition(
-    pos=>executeUnifiedPipeline(pos.coords.latitude,pos.coords.longitude),
-    err=>{
-      const msgs={1:'⚠️ رُفض إذن GPS — اسمح بالموقع من إعدادات المتصفح',2:'⚠️ GPS غير متاح أو الإشارة ضعيفة',3:'⚠️ انتهت مهلة GPS — نحاول مجدداً'};
-      document.getElementById('gps-status').textContent=(err&&msgs[err.code])||'تعذّر الوصول إلى GPS';
-      if(err&&err.code===1&&gpsWatchId!==null){navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null;}
-    },
-    GPS_OPT
-  );
+  if(gpsWatchId!==null){navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null;}
+  currentLat=null;currentLng=null;
+  document.getElementById('gps-status').textContent='📡 جارٍ تحديد الموقع...';
+  if(!navigator.geolocation){const msg=gpsUnavailableMessage();document.getElementById('gps-status').textContent=msg;return;}
+  let init=false;
+  let pendingPos=null;
+  let fallbackTimer=null;
+  const clearFallback=()=>{if(fallbackTimer){clearTimeout(fallbackTimer);fallbackTimer=null;}};
+  const useInitial=pos=>{clearFallback();applyGps(pos,false);init=true;};
+  try{
+    gpsWatchId=navigator.geolocation.watchPosition(pos=>{
+      const q=gpsQuality(pos);
+      const acc=Number.isFinite(q.acc)?Math.round(q.acc):'?';
+      if(!q.usable){document.getElementById('gps-status').textContent=`📡 انتظار إشارة GPS... (دقة: ${acc} م)`;return;}
+      if(!init){
+        pendingPos=betterGps(pendingPos,pos);
+        if(q.accurate){useInitial(pos);return;}
+        document.getElementById('gps-status').textContent=`📡 تم التقاط موقع تقريبي... (دقة: ${acc} م)`;
+        if(!fallbackTimer){fallbackTimer=setTimeout(()=>{fallbackTimer=null;if(!init&&pendingPos){useInitial(pendingPos);}},GPS_INITIAL_FALLBACK_MS);}
+        return;
+      }
+      if(!q.accurate){document.getElementById('gps-status').textContent=`📡 GPS تقريبي، ننتظر دقة أفضل... (${acc} م)`;return;}
+      applyGps(pos,true);
+    },err=>{clearFallback();const msg=gpsErrorMessage(err);document.getElementById('gps-status').textContent=msg;if(err&&err.code===1&&gpsWatchId!==null){navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null;}},GPS_OPT);
+  }catch(e){document.getElementById('gps-status').textContent=gpsUnavailableMessage();}
 }
 startGPS();
-// Position par défaut Nabeul — si GPS ne répond pas après 8 secondes
-setTimeout(()=>{
-  const gpsEl=document.getElementById('gps-status');
-  if(gpsEl&&gpsEl.textContent==='جاري تحديد موقعك...'){
-    gpsEl.textContent='📍 موقع افتراضي: نابل';
-    executeUnifiedPipeline(36.4510,10.7370);
-  }
-},8000);
 
 function startMonologue() {
   const presenterName=currentPresenter.name;
