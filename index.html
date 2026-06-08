@@ -613,39 +613,42 @@ function startItineraryListen(){
   btn.style.background='linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,215,0,0.05))';
   itinListening=true;
 
-  itinRecognition=new SR();
-  itinRecognition.lang='ar-SA';
-  itinRecognition.continuous=false;
-  itinRecognition.interimResults=false;
-
-  itinRecognition.onresult=function(e){
-    const text=e.results[0][0].transcript;
-    stopItineraryListen();
-    // Confirm heard
-    window.speechSynthesis.cancel();
-    const conf=new SpeechSynthesisUtterance('سمعتك. ' );
-    conf.lang='ar-SA';conf.rate=0.88;
-    conf.onend=()=>processItineraryVoice(text);
-    window.speechSynthesis.speak(conf);
-  };
-  itinRecognition.onerror=function(e){
-    stopItineraryListen();
-    if(e.error==='no-speech'){
-      const u=new SpeechSynthesisUtterance('لم أسمعك، حاول مرة أخرى.');
-      u.lang='ar-SA';window.speechSynthesis.speak(u);
-    }
-  };
-  itinRecognition.onend=function(){if(itinListening)stopItineraryListen();};
-
-  // Unlock audio and speak greeting, then start mic
+  // Speak greeting first, then open mic after delay
   window.speechSynthesis.cancel();
-  const greet=new SpeechSynthesisUtterance('أسمعك. قل لي ماذا تريد أن تفعل وكم من الوقت عندك.');
-  greet.lang='ar-SA';greet.rate=0.88;
-  greet.onend=()=>{try{itinRecognition.start();}catch(e){stopItineraryListen();}};
-  greet.onerror=()=>{try{itinRecognition.start();}catch(e){stopItineraryListen();}};
-  // Fallback if TTS blocked
-  setTimeout(()=>{if(itinListening&&itinRecognition){try{itinRecognition.start();}catch(e){}}},4000);
+  const greet=new SpeechSynthesisUtterance('أسمعك. قل لي ماذا تريد أن تفعل.');
+  greet.lang='ar-SA';greet.rate=0.85;
   window.speechSynthesis.speak(greet);
+
+  // Open mic 3 seconds after greeting starts
+  setTimeout(function(){
+    if(!itinListening)return;
+    const SR2=window.SpeechRecognition||window.webkitSpeechRecognition;
+    itinRecognition=new SR2();
+    itinRecognition.lang='ar-SA';
+    itinRecognition.continuous=false;
+    itinRecognition.interimResults=false;
+    itinRecognition.onresult=function(e){
+      const text=e.results[0][0].transcript;
+      stopItineraryListen();
+      window.speechSynthesis.cancel();
+      setTimeout(function(){
+        const conf=new SpeechSynthesisUtterance('سمعتك.');
+        conf.lang='ar-SA';conf.rate=0.85;
+        window.speechSynthesis.speak(conf);
+        setTimeout(function(){processItineraryVoice(text);},1500);
+      },300);
+    };
+    itinRecognition.onerror=function(e){
+      stopItineraryListen();
+      if(e.error==='no-speech'){
+        window.speechSynthesis.cancel();
+        const u=new SpeechSynthesisUtterance('لم أسمعك، حاول مرة أخرى.');
+        u.lang='ar-SA';window.speechSynthesis.speak(u);
+      }
+    };
+    itinRecognition.onend=function(){if(itinListening)stopItineraryListen();};
+    try{itinRecognition.start();}catch(e){stopItineraryListen();}
+  },3000);
 }
 
 function stopItineraryListen(){
@@ -705,12 +708,24 @@ function processItineraryVoice(text){
   const txt_en=`OK. Here is your route: ${build('en')} Total: ${t_en}.`;
 
   window.speechSynthesis.cancel();
-  const uAr=new SpeechSynthesisUtterance(txt_ar);uAr.lang='ar-SA';uAr.rate=0.87;
-  const uFr=new SpeechSynthesisUtterance(txt_fr);uFr.lang='fr-FR';uFr.rate=0.87;
-  const uEn=new SpeechSynthesisUtterance(txt_en);uEn.lang='en-US';uEn.rate=0.87;
-  uAr.onend=()=>window.speechSynthesis.speak(uFr);
-  uFr.onend=()=>window.speechSynthesis.speak(uEn);
-  window.speechSynthesis.speak(uAr);
+  // Speak in sequence with setTimeout — more reliable on mobile
+  function speakQueue(texts, langs, idx){
+    if(idx>=texts.length)return;
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(texts[idx]);
+    u.lang=langs[idx];u.rate=0.87;
+    // estimate duration: ~100ms per char, min 2s
+    const dur=Math.max(2000, texts[idx].length*85);
+    u.onend=()=>setTimeout(()=>speakQueue(texts,langs,idx+1),500);
+    u.onerror=()=>setTimeout(()=>speakQueue(texts,langs,idx+1),dur);
+    window.speechSynthesis.speak(u);
+    // fallback timeout
+    setTimeout(()=>{
+      if(window.speechSynthesis.speaking)return;
+      speakQueue(texts,langs,idx+1);
+    },dur+1000);
+  }
+  speakQueue([txt_ar,txt_fr,txt_en],['ar-SA','fr-FR','en-US'],0);
 }
 
 window.onload=function(){
