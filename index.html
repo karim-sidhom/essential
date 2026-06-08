@@ -4,13 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LORD SYSTEM — نظام التنقل الذكي</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:">
 <meta name="theme-color" content="#0a0005">
-<link rel="manifest" href="./manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="LORD">
-<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;500;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -223,6 +218,145 @@ body{font-family:'Tajawal',sans-serif;background-color:var(--deep);color:var(--t
 
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,rgba(20,0,8,0.97),rgba(50,0,20,0.95));border:1px solid rgba(255,215,0,0.4);color:var(--gold-bright);padding:11px 22px;border-radius:50px;font-family:'Tajawal';font-size:13px;font-weight:700;z-index:999;box-shadow:0 4px 30px rgba(0,0,0,0.6);opacity:0;transition:opacity .4s;pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;}
+
+/* ══ SYSTÈME D'URGENCE LORD SIDHOM ══ */
+.sos-fab{
+  position:fixed;bottom:20px;right:16px;z-index:50;
+  width:60px;height:60px;border-radius:50%;
+  background:linear-gradient(135deg,#c0392b,#e74c3c);
+  border:3px solid #ff6b6b;
+  box-shadow:0 0 20px rgba(231,76,60,0.7),0 0 40px rgba(231,76,60,0.3);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:24px;
+  animation:sosPulse 1.5s ease-in-out infinite;
+  -webkit-tap-highlight-color:transparent;
+}
+@keyframes sosPulse{
+  0%,100%{box-shadow:0 0 15px rgba(231,76,60,0.5);}
+  50%{box-shadow:0 0 35px rgba(231,76,60,1),0 0 60px rgba(231,76,60,0.5);}
+}
+
+/* DOSSIER MEDICAL PANEL */
+.med-panel{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,0.92);
+  display:none;overflow-y:auto;
+  padding:20px 16px 40px;
+}
+.med-panel.open{display:block;}
+.med-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;padding-bottom:12px;
+  border-bottom:1px solid rgba(231,76,60,0.3);
+}
+.med-title{
+  font-family:'Amiri',serif;font-size:20px;
+  color:#e74c3c;
+  text-shadow:0 0 12px rgba(231,76,60,0.5);
+}
+.med-close{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(231,76,60,0.15);border:1px solid rgba(231,76,60,0.4);
+  color:#e74c3c;font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.med-section{margin-bottom:18px;}
+.med-section-title{
+  font-size:12px;font-weight:700;color:var(--gold-bright);
+  letter-spacing:0.1em;margin-bottom:10px;
+  padding-bottom:5px;border-bottom:1px solid rgba(255,215,0,0.15);
+}
+.med-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.med-input{
+  flex:1;min-width:120px;
+  background:rgba(20,0,8,0.9);
+  border:1px solid rgba(255,215,0,0.2);
+  border-radius:8px;padding:8px 12px;
+  color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;
+  outline:none;direction:rtl;
+}
+.med-input:focus{border-color:var(--gold-bright);}
+.med-input::placeholder{color:rgba(255,255,255,0.25);font-size:11px;}
+.med-select{
+  flex:1;min-width:120px;
+  background:rgba(20,0,8,0.9);
+  border:1px solid rgba(255,215,0,0.2);
+  border-radius:8px;padding:8px 12px;
+  color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;
+  outline:none;
+}
+.med-label{font-size:11px;color:var(--text-dim);margin-bottom:4px;display:block;}
+.med-save-btn{
+  width:100%;padding:12px;border-radius:10px;
+  background:linear-gradient(135deg,rgba(231,76,60,0.2),rgba(192,57,43,0.15));
+  border:1px solid rgba(231,76,60,0.4);
+  color:#e74c3c;font-family:'Tajawal',sans-serif;
+  font-size:14px;font-weight:700;cursor:pointer;
+  margin-top:10px;
+}
+.med-saved-badge{
+  display:none;text-align:center;padding:8px;
+  font-size:12px;color:#27ae60;margin-top:8px;
+}
+
+/* ALERTE URGENCE */
+.sos-alert{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(180,0,0,0.97);
+  display:none;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;padding:30px;
+}
+.sos-alert.active{display:flex;}
+.sos-icon{font-size:80px;animation:sosBlink 0.5s infinite;}
+@keyframes sosBlink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.sos-title{
+  font-family:'Amiri',serif;font-size:32px;
+  color:#fff;text-shadow:0 0 20px rgba(255,255,255,0.8);
+  margin:16px 0 8px;
+}
+.sos-countdown{
+  font-size:72px;font-weight:900;color:#fff;
+  font-variant-numeric:tabular-nums;
+  text-shadow:0 0 30px rgba(255,255,255,0.9);
+  margin:10px 0;
+}
+.sos-sub{font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:24px;}
+.sos-cancel-btn{
+  padding:16px 40px;border-radius:14px;
+  background:rgba(255,255,255,0.15);
+  border:2px solid rgba(255,255,255,0.5);
+  color:#fff;font-family:'Tajawal',sans-serif;
+  font-size:16px;font-weight:700;cursor:pointer;
+  margin-bottom:12px;width:100%;max-width:300px;
+}
+.sos-manual-btn{
+  padding:10px 30px;border-radius:10px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.3);
+  color:rgba(255,255,255,0.7);font-family:'Tajawal',sans-serif;
+  font-size:13px;cursor:pointer;width:100%;max-width:300px;
+}
+
+/* CALLING SCREEN */
+.sos-calling{
+  position:fixed;inset:0;z-index:600;
+  background:rgba(0,0,0,0.97);
+  display:none;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;padding:30px;
+}
+.sos-calling.active{display:flex;}
+.calling-icon{font-size:60px;animation:callingPulse 1s infinite;}
+@keyframes callingPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
+.calling-name{font-size:22px;color:#fff;font-family:'Amiri',serif;margin:16px 0 4px;}
+.calling-status{font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:30px;}
+.calling-end-btn{
+  padding:14px 40px;border-radius:50px;
+  background:#e74c3c;border:none;
+  color:#fff;font-family:'Tajawal',sans-serif;
+  font-size:14px;font-weight:700;cursor:pointer;
+}
 </style>
 </head>
 <body>
@@ -512,9 +646,8 @@ function fmtTime(d){
 }
 function boundingBox(lat,lon,r=6){const lD=r/111.32,oD=r/(111.32*Math.max(Math.cos(d2r(lat)),0.1));return`${(lon-oD).toFixed(5)},${(lat-lD).toFixed(5)},${(lon+oD).toFixed(5)},${(lat+lD).toFixed(5)}`;}
 
-const GPS_ACC=150,GPS_FALLBACK_ACC=2500,GPS_AGE=120000,GPS_DIST=0.05,GPS_INITIAL_FALLBACK_MS=8000,GPS_OPT={enableHighAccuracy:true,timeout:15000,maximumAge:60000};
 const currentData={atm:null,gas:null,pharm:null,mosque:null};
-let routeStops=[],gpsWatchId=null,currentLat=null,currentLng=null;
+let routeStops=[],gpsWatchId=null,lastUpdate=0;
 
 const CFG={
   atm:{label:'الصرّاف الآلي',icon:'🏧',url:'https://dabi.kieda.online'},
@@ -626,7 +759,17 @@ function unlockAudio(){
   try{const ctx=new (window.AudioContext||window.webkitAudioContext)();const buf=ctx.createBuffer(1,1,22050);const src=ctx.createBufferSource();src.buffer=buf;src.connect(ctx.destination);src.start(0);}catch(e){}
   if(window.speechSynthesis&&window.SpeechSynthesisUtterance){const u=new SpeechSynthesisUtterance(' ');u.volume=0;window.speechSynthesis.speak(u);}
   loadMaleVoice(); // s'assurer que la voix est chargée avant le monologue
-  setTimeout(startMonologue,1000);
+  // Attendre que Nominatim ait répondu avant de parler
+  const waitForData = () => {
+    const types = ['atm','gas','pharm','mosque'];
+    const allReady = types.every(t => {
+      const el = document.getElementById('name-'+t);
+      return el && el.textContent !== 'جارٍ الفحص...' && el.textContent !== '';
+    });
+    if(allReady) { startMonologue(); }
+    else { setTimeout(waitForData, 500); }
+  };
+  setTimeout(waitForData, 1500);
 }
 // Déverrouillage au premier contact — invisible pour l'utilisateur
 document.addEventListener('click',unlockAudio,{once:true});
@@ -725,7 +868,12 @@ async function queryNominatim(lat,lon,amenity,type){
   document.getElementById(`name-${type}`).textContent='جارٍ الفحص...';
   try{
     const url=`https://nominatim.openstreetmap.org/search?format=jsonv2&amenity=${amenity}&viewbox=${boundingBox(lat,lon,6)}&bounded=1&limit=10&accept-language=ar`;
-    const res=await fetch(url);const locs=await res.json();
+    const ctrl=new AbortController();
+    const tid=setTimeout(()=>ctrl.abort(),12000);
+    const res=await fetch(url,{signal:ctrl.signal,headers:{'User-Agent':'LordSidhomApp/4.0 (contact@lord-system.app)','Accept':'application/json'}});
+    clearTimeout(tid);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const locs=await res.json();
     if(locs&&locs.length>0){
       const s=locs.map(l=>({name:l.name||l.display_name.split(',')[0].trim(),lat:parseFloat(l.lat),lon:parseFloat(l.lon),dist:haversineKm(lat,lon,parseFloat(l.lat),parseFloat(l.lon))})).sort((a,b)=>a.dist-b.dist);
       const n=s[0];
@@ -753,8 +901,26 @@ function _triggerAdhan(prayer,time){
   _notifiedAdhan.add(key);
 
   // Play adhan audio
-  const adhanAudio=new Audio('https://www.islamcan.com/audio/adhan/azan1.mp3');
-  adhanAudio.play().catch(()=>{});
+  // Adhan synthétique WebAudio — aucune dépendance externe
+  try {
+    const actx = new (window.AudioContext||window.webkitAudioContext)();
+    const notes = [
+      {f:440,t:0,d:0.6},{f:494,t:0.7,d:0.5},{f:523,t:1.3,d:0.8},
+      {f:494,t:2.2,d:0.5},{f:440,t:2.8,d:0.6},{f:392,t:3.5,d:1.0},
+      {f:440,t:4.6,d:0.6},{f:494,t:5.3,d:0.5},{f:523,t:5.9,d:1.2},
+    ];
+    notes.forEach(({f,t,d})=>{
+      const o=actx.createOscillator();
+      const g=actx.createGain();
+      o.type='sine'; o.frequency.value=f;
+      g.gain.setValueAtTime(0,actx.currentTime+t);
+      g.gain.linearRampToValueAtTime(0.3,actx.currentTime+t+0.05);
+      g.gain.linearRampToValueAtTime(0,actx.currentTime+t+d);
+      o.connect(g); g.connect(actx.destination);
+      o.start(actx.currentTime+t);
+      o.stop(actx.currentTime+t+d+0.1);
+    });
+  } catch(e){}
 
   // Show popup
   document.getElementById('adhan-name').textContent=prayer.ar;
@@ -823,13 +989,8 @@ async function initPrayer(lat,lon){
   if(_pt)clearInterval(_pt);_pt=setInterval(_renderStrip,1000);
 }
 
-function gpsUnavailableMessage(){const local=['localhost','127.0.0.1','::1','[::1]'].includes(location.hostname);if(!window.isSecureContext&&!local)return'⚠️ GPS وPWA يحتاجان HTTPS أو localhost. افتح التطبيق عبر رابط آمن.';return'⚠️ GPS غير مدعوم في هذا المتصفح.';}
-function gpsErrorMessage(err){if(!window.isSecureContext)return'⚠️ GPS وPWA يحتاجان HTTPS أو localhost. افتح التطبيق عبر رابط آمن.';const msgs={1:'⚠️ رُفض إذن GPS. اسمح بالموقع من إعدادات المتصفح أو أدخل الإحداثيات يدوياً.',2:'⚠️ GPS غير متاح أو الإشارة ضعيفة. يمكنك إدخال الإحداثيات يدوياً.',3:'⚠️ انتهت مهلة GPS. نحاول مجدداً.'};return(err&&msgs[err.code])||'⚠️ خطأ GPS غير معروف.';}
-function gpsQuality(p){if(!p||!p.coords)return{usable:false,accurate:false,acc:Infinity};const{latitude,longitude,accuracy}=p.coords;const acc=Number.isFinite(accuracy)?accuracy:Infinity;const age=Number.isFinite(p.timestamp)?Math.max(0,Date.now()-p.timestamp):Infinity;const valid=Number.isFinite(latitude)&&latitude>=-90&&latitude<=90&&Number.isFinite(longitude)&&longitude>=-180&&longitude<=180;return{usable:valid&&age<=GPS_AGE&&acc<=GPS_FALLBACK_ACC,accurate:valid&&age<=GPS_AGE&&acc<=GPS_ACC,acc};}
-function betterGps(a,b){if(!a)return b;return gpsQuality(b).acc<gpsQuality(a).acc?b:a;}
-function applyGps(pos,notify=true){const{latitude:nl,longitude:no,accuracy:acc}=pos.coords;const at=Number.isFinite(acc)?`${Math.round(acc)} م`:'?';const has=Number.isFinite(currentLat)&&Number.isFinite(currentLng);const dist=has?haversineKm(currentLat,currentLng,nl,no):Infinity;if(!has||dist>GPS_DIST){currentLat=nl;currentLng=no;executeUnifiedPipeline(nl,no);return true;}document.getElementById('gps-status').textContent=`📍 ${nl.toFixed(4)}, ${no.toFixed(4)} · دقة ${at}`;return false;}
-
 async function executeUnifiedPipeline(lat,lon){
+  const _now=Date.now();if(_now-lastUpdate<20000&&lastUpdate!==0)return;lastUpdate=_now;
   document.getElementById('gps-status').textContent=`📍 ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
   stopAllSpeech();
   await queryNominatim(lat,lon,'atm','atm');await new Promise(r=>setTimeout(r,1100));
@@ -1127,7 +1288,7 @@ const JAZARI_INTENT_WORDS = {
 
 const JAZARI_TIME_WORDS = {
   ar: { hour:'ساعة', minute:'دقيقة', half:'نص ساعة', quarter:'ربع ساعة' },
-  fr: { hour:'heure', minute:'minute', half:'demi-heure', quarter:"quart d'heure" },
+  fr: { hour:'heure', minute:'minute', half:'demi-heure', quarter:'quart d'heure' },
   en: { hour:'hour', minute:'minute', half:'half hour', quarter:'quarter hour' },
 };
 
@@ -1333,7 +1494,10 @@ async function jazariHandleUnknown(text){
   // Wikipedia — vocal only
   try{
     const wl=lang==='ar'?'ar':lang==='fr'?'fr':'en';
-    const res=await fetch(`https://${wl}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(text)}`);
+    const wikiCtrl=new AbortController();
+    const wikiTid=setTimeout(()=>wikiCtrl.abort(),8000);
+    const res=await fetch(`https://${wl}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(text)}`,{signal:wikiCtrl.signal});
+    clearTimeout(wikiTid);
     if(res.ok){
       const d=await res.json();
       if(d.extract&&d.extract.length>20){
@@ -1424,43 +1588,37 @@ function presentAllResults(){
 }
 
 document.getElementById('mode-select').addEventListener('change',function(e){
-  if(e.target.value==='manual'){document.getElementById('manual-inputs').style.display='flex';if(gpsWatchId!==null){navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null;}}
+  if(e.target.value==='manual'){document.getElementById('manual-inputs').style.display='flex';if(gpsWatchId)navigator.geolocation.clearWatch(gpsWatchId);}
   else{document.getElementById('manual-inputs').style.display='none';startGPS();}
 });
 function forceManualExecution(){
   const lat=parseFloat(document.getElementById('man-lat').value);
   const lon=parseFloat(document.getElementById('man-lon').value);
-  if(!isNaN(lat)&&!isNaN(lon)){currentLat=lat;currentLng=lon;executeUnifiedPipeline(lat,lon);}
+  if(!isNaN(lat)&&!isNaN(lon))executeUnifiedPipeline(lat,lon);
   else toast('⚠️ إحداثيات غير صحيحة');
 }
 function startGPS(){
-  if(gpsWatchId!==null){navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null;}
-  currentLat=null;currentLng=null;
-  document.getElementById('gps-status').textContent='📡 جارٍ تحديد الموقع...';
-  if(!navigator.geolocation){const msg=gpsUnavailableMessage();document.getElementById('gps-status').textContent=msg;return;}
-  let init=false;
-  let pendingPos=null;
-  let fallbackTimer=null;
-  const clearFallback=()=>{if(fallbackTimer){clearTimeout(fallbackTimer);fallbackTimer=null;}};
-  const useInitial=pos=>{clearFallback();applyGps(pos,false);init=true;};
-  try{
-    gpsWatchId=navigator.geolocation.watchPosition(pos=>{
-      const q=gpsQuality(pos);
-      const acc=Number.isFinite(q.acc)?Math.round(q.acc):'?';
-      if(!q.usable){document.getElementById('gps-status').textContent=`📡 انتظار إشارة GPS... (دقة: ${acc} م)`;return;}
-      if(!init){
-        pendingPos=betterGps(pendingPos,pos);
-        if(q.accurate){useInitial(pos);return;}
-        document.getElementById('gps-status').textContent=`📡 تم التقاط موقع تقريبي... (دقة: ${acc} م)`;
-        if(!fallbackTimer){fallbackTimer=setTimeout(()=>{fallbackTimer=null;if(!init&&pendingPos){useInitial(pendingPos);}},GPS_INITIAL_FALLBACK_MS);}
-        return;
-      }
-      if(!q.accurate){document.getElementById('gps-status').textContent=`📡 GPS تقريبي، ننتظر دقة أفضل... (${acc} م)`;return;}
-      applyGps(pos,true);
-    },err=>{clearFallback();const msg=gpsErrorMessage(err);document.getElementById('gps-status').textContent=msg;if(err&&err.code===1&&gpsWatchId!==null){navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null;}},GPS_OPT);
-  }catch(e){document.getElementById('gps-status').textContent=gpsUnavailableMessage();}
+  if(!navigator.geolocation){document.getElementById('gps-status').textContent='تعذّر الوصول إلى GPS';return;}
+  if(gpsWatchId)navigator.geolocation.clearWatch(gpsWatchId);
+  gpsWatchId=navigator.geolocation.watchPosition(
+    pos=>executeUnifiedPipeline(pos.coords.latitude,pos.coords.longitude),
+    (err)=>{
+      const msgs={1:'⚠️ رُفض إذن GPS — فعّل الموقع في إعدادات المتصفح',2:'⚠️ GPS غير متاح',3:'⚠️ انتهت مهلة GPS — أعد المحاولة'};
+      document.getElementById('gps-status').textContent=msgs[err?.code]||'تعذّر الوصول إلى GPS';
+      document.getElementById('manual-inputs').style.display='flex';
+    },
+    {enableHighAccuracy:true,maximumAge:30000,timeout:15000}
+  );
 }
 startGPS();
+// Position par défaut Nabeul — si GPS ne répond pas après 8 secondes
+setTimeout(()=>{
+  const gpsEl=document.getElementById('gps-status');
+  if(gpsEl&&gpsEl.textContent==='جاري تحديد موقعك...'){
+    gpsEl.textContent='📍 موقع افتراضي: نابل';
+    executeUnifiedPipeline(36.4510,10.7370);
+  }
+},8000);
 
 function startMonologue() {
   const presenterName=currentPresenter.name;
@@ -1558,11 +1716,625 @@ function startMonologue() {
   });
 
 } // fin startMonologue
-</script>
-<script>
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e));
+
+
+// ══════════════════════════════════════════════
+//  نظام الطوارئ الطبية — LORD SIDHOM STANDARD GUARD
+// ══════════════════════════════════════════════
+
+let medProfile = null;
+let sosCountdownTimer = null;
+let sosCountdownVal = 30;
+let sosActive = false;
+let sosCallingActive = false;
+
+// ── LOAD / SAVE PROFILE ──
+function saveMedProfile() {
+  medProfile = {
+    name:          document.getElementById('med-name').value.trim(),
+    age:           document.getElementById('med-age').value.trim(),
+    blood:         document.getElementById('med-blood').value,
+    conditions:    document.getElementById('med-conditions').value.trim(),
+    meds:          document.getElementById('med-meds').value.trim(),
+    allergy:       document.getElementById('med-allergy').value.trim(),
+    contact1:      document.getElementById('med-contact1').value.trim(),
+    contact1name:  document.getElementById('med-contact1-name').value.trim(),
+    contact2:      document.getElementById('med-contact2').value.trim(),
+    contact2name:  document.getElementById('med-contact2-name').value.trim(),
+    contact3:      document.getElementById('med-contact3').value.trim(),
+    contact3name:  document.getElementById('med-contact3-name').value.trim(),
+    emergencyNum:  document.getElementById('med-emergency-num').value.trim() || '197',
+    hrMax:         parseInt(document.getElementById('med-hr-max').value) || 150,
+    hrMin:         parseInt(document.getElementById('med-hr-min').value) || 40,
+    countdown:     parseInt(document.getElementById('med-countdown').value) || 30,
+  };
+
+  // Save to localStorage
+  try { localStorage.setItem('lordSidhomMedProfile', JSON.stringify(medProfile)); } catch(e) {}
+
+  const badge = document.getElementById('med-saved-badge');
+  if (badge) { badge.style.display = 'block'; setTimeout(()=>{badge.style.display='none';}, 3000); }
 }
+
+function loadMedProfile() {
+  try {
+    const saved = localStorage.getItem('lordSidhomMedProfile');
+    if (saved) {
+      medProfile = JSON.parse(saved);
+      // Fill form
+      const fields = ['name','age','blood','conditions','meds','allergy',
+        'contact1','contact1-name','contact2','contact2-name','contact3','contact3-name',
+        'emergency-num','hr-max','hr-min','countdown'];
+      fields.forEach(f => {
+        const el = document.getElementById(`med-${f}`);
+        if (el && medProfile[f.replace('-','')]) el.value = medProfile[f.replace('-','')];
+      });
+    }
+  } catch(e) {}
+}
+
+function openMedPanel() {
+  loadMedProfile();
+  const p = document.getElementById('med-panel');
+  if (p) p.classList.add('open');
+}
+
+function closeMedPanel() {
+  const p = document.getElementById('med-panel');
+  if (p) p.classList.remove('open');
+}
+
+// ── TRIGGER SOS (anomalie détectée ou manuel) ──
+function triggerSOS(isAnomaly = true) {
+  if (sosActive) return;
+  sosActive = true;
+  sosCountdownVal = (medProfile && medProfile.countdown) || 30;
+
+  const alert = document.getElementById('sos-alert');
+  const cd = document.getElementById('sos-countdown');
+  if (!alert || !cd) return;
+
+  alert.classList.add('active');
+  cd.textContent = sosCountdownVal;
+
+  // Vibrate immediately
+  if (navigator.vibrate) navigator.vibrate([500,200,500,200,500,200,1000]);
+
+  // Speak alert in Arabic
+  if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
+    const u = new SpeechSynthesisUtterance('تنبيه! تنبيه! تم رصد حالة طارئة. اضغط إلغاء إذا كنت بخير. سيتم الاتصال بالإسعاف خلال ' + sosCountdownVal + ' ثانية.');
+    u.lang = 'ar-SA'; u.rate = 0.9; u.volume = 1;
+    if (maleVoice) u.voice = maleVoice;
+    window.speechSynthesis.speak(u);
+  }
+
+  // Countdown
+  sosCountdownTimer = setInterval(() => {
+    sosCountdownVal--;
+    if (cd) cd.textContent = sosCountdownVal;
+    if (sosCountdownVal <= 0) {
+      clearInterval(sosCountdownTimer);
+      launchSOS();
+    }
+  }, 1000);
+}
+
+function cancelSOS() {
+  sosActive = false;
+  if (sosCountdownTimer) { clearInterval(sosCountdownTimer); sosCountdownTimer = null; }
+  const alert = document.getElementById('sos-alert');
+  if (alert) alert.classList.remove('active');
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  if (navigator.vibrate) navigator.vibrate([100]);
+  toast('✅ تم الإلغاء — أنت بخير');
+}
+
+// ── LAUNCH SOS — AFTER COUNTDOWN ──
+async function launchSOS() {
+  clearInterval(sosCountdownTimer);
+  const alert = document.getElementById('sos-alert');
+  if (alert) alert.classList.remove('active');
+  sosActive = false;
+
+  // Get current GPS position
+  let gpsText = 'موقع غير محدد';
+  let gpsLink = '';
+  let lat = null, lon = null;
+
+  if (typeof currentLat !== 'undefined' && currentLat) {
+    lat = currentLat; lon = currentLon || 0;
+  } else {
+    const gpsEl = document.getElementById('gps-status');
+    if (gpsEl) gpsText = gpsEl.textContent;
+  }
+
+  if (lat) {
+    gpsText = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+    gpsLink = `https://maps.google.com/?q=${lat},${lon}`;
+  }
+
+  const p = medProfile || {};
+  const name = p.name || 'شخص مجهول';
+  const age = p.age || '؟';
+  const blood = p.blood || '؟';
+  const conditions = p.conditions || 'غير محدد';
+  const meds = p.meds || 'غير محدد';
+  const allergy = p.allergy || 'لا';
+  const emergencyNum = p.emergencyNum || '197';
+
+  // ── STEP 1: CRY FOR HELP ──
+  await jazariCryForHelp();
+
+  // ── STEP 2: CALL EMERGENCY SERVICES ──
+  await jazariCallNumber(emergencyNum, 'الإسعاف', lat, lon, p);
+
+  // ── STEP 3: SPEAK MEDICAL DOSSIER ──
+  await jazariSpeakMedicalDossier(p, gpsText);
+
+  // ── STEP 4: CALL PERSONAL CONTACTS ──
+  const contacts = [
+    { num: p.contact1, name: p.contact1name },
+    { num: p.contact2, name: p.contact2name },
+    { num: p.contact3, name: p.contact3name },
+  ].filter(c => c.num);
+
+  for (const contact of contacts) {
+    await jazariCallPersonalContact(contact, p, gpsText, gpsLink);
+    await new Promise(r => setTimeout(r, 3000));
+  }
+
+  // ── STEP 5: SEND SMS ──
+  jazariSendSMS(p, gpsText, gpsLink, emergencyNum);
+}
+
+// ── CRY FOR HELP ──
+async function jazariCryForHelp() {
+  return new Promise(resolve => {
+    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) { resolve(); return; }
+
+    // Vibrate SOS pattern
+    if (navigator.vibrate) navigator.vibrate([1000,500,1000,500,1000,500,1000,500,1000]);
+
+    const cries = [
+      { text: 'ساعدوني! ساعدوني! ساعدوني!', lang: 'ar-SA' },
+      { text: 'Au secours! Au secours! Au secours!', lang: 'fr-FR' },
+      { text: 'Help me! Help me! Help me!', lang: 'en-US' },
+    ];
+
+    let idx = 0;
+    function speakNext() {
+      if (idx >= cries.length) { resolve(); return; }
+      const cry = cries[idx++];
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(cry.text);
+      u.lang = cry.lang; u.rate = 0.85; u.volume = 1; u.pitch = 1.3;
+      u.onend = speakNext; u.onerror = speakNext;
+      window.speechSynthesis.speak(u);
+    }
+    speakNext();
+  });
+}
+
+// ── SPEAK MEDICAL DOSSIER ──
+async function jazariSpeakMedicalDossier(p, gpsText) {
+  return new Promise(resolve => {
+    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) { resolve(); return; }
+    const text = `مساعدة طبية عاجلة. اسم الشخص ${p.name||'مجهول'}، عمره ${p.age||'غير محدد'} سنة، فصيلة الدم ${p.blood||'غير محددة'}. يعاني من ${p.conditions||'غير محدد'}. يأخذ دواء ${p.meds||'غير محدد'}. حساسية من ${p.allergy||'لا شيء'}. موقعه الحالي ${gpsText}. يحتاج تدخلاً طبياً عاجلاً.`;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'ar-SA'; u.rate = 0.8; u.volume = 1;
+    if (maleVoice) u.voice = maleVoice;
+    u.onend = resolve; u.onerror = resolve;
+    window.speechSynthesis.speak(u);
+  });
+}
+
+// ── CALL NUMBER ──
+async function jazariCallNumber(num, label, lat, lon, p) {
+  const calling = document.getElementById('sos-calling');
+  const callingName = document.getElementById('calling-name');
+  const callingStatus = document.getElementById('calling-status');
+  if (!calling || !callingName || !callingStatus) return;
+
+  callingName.textContent = `${label} — ${num}`;
+  callingStatus.textContent = 'الجزري يتصل...';
+  calling.classList.add('active');
+  sosCallingActive = true;
+
+  // Open phone call
+  window.location.href = `tel:${num}`;
+
+  // Speak while calling
+  await new Promise(r => setTimeout(r, 2000));
+  await jazariSpeakMedicalDossier(p, lat ? `${lat.toFixed(5)}, ${lon.toFixed(5)}` : 'غير محدد');
+
+  await new Promise(r => setTimeout(r, 4000));
+  calling.classList.remove('active');
+  sosCallingActive = false;
+}
+
+// ── CALL PERSONAL CONTACT ──
+async function jazariCallPersonalContact(contact, p, gpsText, gpsLink) {
+  const calling = document.getElementById('sos-calling');
+  const callingName = document.getElementById('calling-name');
+  const callingStatus = document.getElementById('calling-status');
+  if (!calling) return;
+
+  callingName.textContent = `${contact.name} — ${contact.num}`;
+  callingStatus.textContent = 'الجزري يتصل للإبلاغ عن الحالة';
+  calling.classList.add('active');
+
+  window.location.href = `tel:${contact.num}`;
+
+  // Speak message for this contact
+  await new Promise(r => setTimeout(r, 2000));
+  if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
+    const msg = `مرحبا، أنا الجزري. صاحبك ${p.name||'الشخص'} في خطر الآن ويحتاج مساعدة عاجلة. موقعه ${gpsText}. يرجى التوجه إليه فوراً أو الاتصال بالإسعاف.`;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(msg);
+    u.lang = 'ar-SA'; u.rate = 0.85; u.volume = 1;
+    if (maleVoice) u.voice = maleVoice;
+    await new Promise(res => { u.onend = res; u.onerror = res; window.speechSynthesis.speak(u); });
+  }
+
+  await new Promise(r => setTimeout(r, 2000));
+  calling.classList.remove('active');
+}
+
+// ── SEND SMS ──
+function jazariSendSMS(p, gpsText, gpsLink, emergencyNum) {
+  const msg = encodeURIComponent(
+    `🚨 URGENCE MÉDICALE
+` +
+    `Nom: ${p.name||'?'} | Age: ${p.age||'?'} | Sang: ${p.blood||'?'}
+` +
+    `Conditions: ${p.conditions||'?'}
+` +
+    `Médicaments: ${p.meds||'?'}
+` +
+    `Allergies: ${p.allergy||'?'}
+` +
+    `📍 Position: ${gpsText}
+` +
+    `${gpsLink}
+` +
+    `Appelez le ${emergencyNum} — الجزري AI`
+  );
+
+  const contacts = [p.contact1, p.contact2, p.contact3].filter(Boolean);
+  if (contacts.length > 0) {
+    window.location.href = `sms:${contacts.join(',')}?body=${msg}`;
+  }
+}
+
+function endSOSCalling() {
+  sosCallingActive = false;
+  const calling = document.getElementById('sos-calling');
+  if (calling) calling.classList.remove('active');
+}
+
+// ── LOAD PROFILE ON BOOT ──
+setTimeout(loadMedProfile, 1000);
+
+
+// ══ قاعدة بيانات أرقام الطوارئ العالمية ══
+const WORLD_EMERGENCY_DB = {
+  TN:{name:'تونس',flag:'🇹🇳',numbers:[{num:'1404',label:'الإسعاف SAMU'},{num:'198',label:'الحماية المدنية'},{num:'197',label:'الحرس الوطني'},{num:'190',label:'الشرطة'}]},
+  DZ:{name:'الجزائر',flag:'🇩🇿',numbers:[{num:'21',label:'الإطفاء / الإسعاف'},{num:'14',label:'الدرك'},{num:'17',label:'الشرطة'}]},
+  MA:{name:'المغرب',flag:'🇲🇦',numbers:[{num:'150',label:'الإسعاف'},{num:'15',label:'الإطفاء'},{num:'177',label:'الدرك الملكي'},{num:'190',label:'الشرطة'}]},
+  LY:{name:'ليبيا',flag:'🇱🇾',numbers:[{num:'193',label:'الإسعاف'},{num:'191',label:'الإطفاء'},{num:'1515',label:'الشرطة'}]},
+  EG:{name:'مصر',flag:'🇪🇬',numbers:[{num:'123',label:'الإسعاف'},{num:'180',label:'الإطفاء'},{num:'122',label:'الشرطة'}]},
+  SD:{name:'السودان',flag:'🇸🇩',numbers:[{num:'999',label:'الطوارئ'},{num:'777',label:'الإسعاف'}]},
+  ET:{name:'إثيوبيا',flag:'🇪🇹',numbers:[{num:'907',label:'الإسعاف'},{num:'939',label:'الإطفاء'},{num:'991',label:'الشرطة'}]},
+  KE:{name:'كينيا',flag:'🇰🇪',numbers:[{num:'999',label:'الطوارئ'},{num:'112',label:'الطوارئ الدولية'}]},
+  NG:{name:'نيجيريا',flag:'🇳🇬',numbers:[{num:'199',label:'الإسعاف'},{num:'123',label:'الإطفاء'},{num:'112',label:'الطوارئ'}]},
+  ZA:{name:'جنوب أفريقيا',flag:'🇿🇦',numbers:[{num:'10177',label:'الإسعاف'},{num:'10111',label:'الشرطة'},{num:'112',label:'الطوارئ'}]},
+  GH:{name:'غانا',flag:'🇬🇭',numbers:[{num:'193',label:'الإسعاف'},{num:'192',label:'الإطفاء'},{num:'191',label:'الشرطة'}]},
+  CM:{name:'الكاميرون',flag:'🇨🇲',numbers:[{num:'15',label:'الإسعاف'},{num:'18',label:'الإطفاء'},{num:'17',label:'الشرطة'}]},
+  CI:{name:'كوت ديفوار',flag:'🇨🇮',numbers:[{num:'185',label:'الإسعاف'},{num:'180',label:'الإطفاء'},{num:'111',label:'الشرطة'}]},
+  SN:{name:'السنغال',flag:'🇸🇳',numbers:[{num:'15',label:'الإسعاف'},{num:'18',label:'الإطفاء'},{num:'17',label:'الشرطة'}]},
+  TZ:{name:'تنزانيا',flag:'🇹🇿',numbers:[{num:'112',label:'الطوارئ'},{num:'115',label:'الشرطة'}]},
+  UG:{name:'أوغندا',flag:'🇺🇬',numbers:[{num:'999',label:'الطوارئ'},{num:'112',label:'الطوارئ الدولية'}]},
+  MZ:{name:'موزمبيق',flag:'🇲🇿',numbers:[{num:'117',label:'الإسعاف'},{num:'198',label:'الشرطة'}]},
+  ZW:{name:'زيمبابوي',flag:'🇿🇼',numbers:[{num:'999',label:'الطوارئ'},{num:'994',label:'الإسعاف'}]},
+  MR:{name:'موريتانيا',flag:'🇲🇷',numbers:[{num:'101',label:'الشرطة'},{num:'118',label:'الإسعاف'},{num:'119',label:'الإطفاء'}]},
+  ML:{name:'مالي',flag:'🇲🇱',numbers:[{num:'15',label:'الإسعاف'},{num:'17',label:'الشرطة'},{num:'18',label:'الإطفاء'}]},
+  BF:{name:'بوركينا فاسو',flag:'🇧🇫',numbers:[{num:'112',label:'الطوارئ'},{num:'18',label:'الإطفاء'}]},
+  NE:{name:'النيجر',flag:'🇳🇪',numbers:[{num:'15',label:'الإسعاف'},{num:'17',label:'الشرطة'}]},
+  TD:{name:'تشاد',flag:'🇹🇩',numbers:[{num:'2251-52-24-24',label:'الإسعاف'},{num:'17',label:'الشرطة'}]},
+  MG:{name:'مدغشقر',flag:'🇲🇬',numbers:[{num:'117',label:'الشرطة'},{num:'118',label:'الإطفاء'}]},
+  AO:{name:'أنغولا',flag:'🇦🇴',numbers:[{num:'112',label:'الطوارئ'},{num:'113',label:'الشرطة'}]},
+  ZM:{name:'زامبيا',flag:'🇿🇲',numbers:[{num:'991',label:'الشرطة'},{num:'993',label:'الإسعاف'}]},
+  RW:{name:'رواندا',flag:'🇷🇼',numbers:[{num:'112',label:'الطوارئ'},{num:'113',label:'الشرطة'}]},
+  SO:{name:'الصومال',flag:'🇸🇴',numbers:[{num:'888',label:'الطوارئ'}]},
+  DJ:{name:'جيبوتي',flag:'🇩🇯',numbers:[{num:'18',label:'الإسعاف'},{num:'17',label:'الشرطة'}]},
+  ER:{name:'إريتريا',flag:'🇪🇷',numbers:[{num:'114',label:'الشرطة'},{num:'115',label:'الإطفاء'}]},
+  BI:{name:'بوروندي',flag:'🇧🇮',numbers:[{num:'112',label:'الطوارئ'},{num:'117',label:'الشرطة'}]},
+  GA:{name:'الغابون',flag:'🇬🇦',numbers:[{num:'1300',label:'الإسعاف'},{num:'18',label:'الإطفاء'}]},
+  TG:{name:'توغو',flag:'🇹🇬',numbers:[{num:'117',label:'الشرطة'},{num:'118',label:'الإطفاء'}]},
+  BJ:{name:'بنين',flag:'🇧🇯',numbers:[{num:'112',label:'الطوارئ'},{num:'117',label:'الشرطة'}]},
+  GN:{name:'غينيا',flag:'🇬🇳',numbers:[{num:'112',label:'الطوارئ'}]},
+  MW:{name:'مالاوي',flag:'🇲🇼',numbers:[{num:'998',label:'الشرطة'},{num:'999',label:'الإطفاء'}]},
+  NA:{name:'ناميبيا',flag:'🇳🇦',numbers:[{num:'211',label:'الطوارئ'},{num:'10111',label:'الشرطة'}]},
+  BW:{name:'بوتسوانا',flag:'🇧🇼',numbers:[{num:'997',label:'الطوارئ'},{num:'999',label:'الشرطة'}]},
+  LS:{name:'ليسوتو',flag:'🇱🇸',numbers:[{num:'112',label:'الطوارئ'},{num:'123',label:'الشرطة'}]},
+  SZ:{name:'إسواتيني',flag:'🇸🇿',numbers:[{num:'999',label:'الطوارئ'}]},
+  CV:{name:'الرأس الأخضر',flag:'🇨🇻',numbers:[{num:'132',label:'الشرطة'},{num:'131',label:'الإسعاف'}]},
+  ST:{name:'ساو تومي',flag:'🇸🇹',numbers:[{num:'112',label:'الطوارئ'}]},
+  KM:{name:'جزر القمر',flag:'🇰🇲',numbers:[{num:'17',label:'الشرطة'},{num:'18',label:'الإسعاف'}]},
+  MU:{name:'موريشيوس',flag:'🇲🇺',numbers:[{num:'999',label:'الشرطة'},{num:'114',label:'الإسعاف'},{num:'115',label:'الإطفاء'}]},
+  SC:{name:'سيشل',flag:'🇸🇨',numbers:[{num:'999',label:'الشرطة'},{num:'151',label:'الإسعاف'}]},
+  /* ═══ آسيا ═══ */
+  SA:{name:'السعودية',flag:'🇸🇦',numbers:[{num:'911',label:'الطوارئ الموحدة'},{num:'997',label:'الهلال الأحمر'},{num:'999',label:'الشرطة'}]},
+  AE:{name:'الإمارات',flag:'🇦🇪',numbers:[{num:'998',label:'الإسعاف'},{num:'997',label:'الإطفاء'},{num:'999',label:'الشرطة'}]},
+  KW:{name:'الكويت',flag:'🇰🇼',numbers:[{num:'112',label:'الطوارئ الموحدة'}]},
+  QA:{name:'قطر',flag:'🇶🇦',numbers:[{num:'999',label:'الطوارئ الموحدة'}]},
+  BH:{name:'البحرين',flag:'🇧🇭',numbers:[{num:'999',label:'الطوارئ الموحدة'}]},
+  OM:{name:'عُمان',flag:'🇴🇲',numbers:[{num:'9999',label:'الطوارئ الموحدة'}]},
+  YE:{name:'اليمن',flag:'🇾🇪',numbers:[{num:'199',label:'الإسعاف'},{num:'191',label:'الشرطة'},{num:'194',label:'الإطفاء'}]},
+  IQ:{name:'العراق',flag:'🇮🇶',numbers:[{num:'122',label:'الإسعاف'},{num:'115',label:'الإطفاء'},{num:'104',label:'الشرطة'}]},
+  SY:{name:'سوريا',flag:'🇸🇾',numbers:[{num:'110',label:'الإسعاف'},{num:'113',label:'الإطفاء'},{num:'112',label:'الشرطة'}]},
+  JO:{name:'الأردن',flag:'🇯🇴',numbers:[{num:'911',label:'الطوارئ الموحدة'}]},
+  LB:{name:'لبنان',flag:'🇱🇧',numbers:[{num:'140',label:'الإسعاف'},{num:'175',label:'الدفاع المدني'},{num:'112',label:'الشرطة'}]},
+  PS:{name:'فلسطين',flag:'🇵🇸',numbers:[{num:'101',label:'الإسعاف'},{num:'102',label:'الإطفاء'},{num:'100',label:'الشرطة'}]},
+  IR:{name:'إيران',flag:'🇮🇷',numbers:[{num:'115',label:'الإسعاف'},{num:'125',label:'الإطفاء'},{num:'110',label:'الشرطة'}]},
+  PK:{name:'باكستان',flag:'🇵🇰',numbers:[{num:'1122',label:'الإسعاف'},{num:'16',label:'الإطفاء'},{num:'15',label:'الشرطة'}]},
+  IN:{name:'الهند',flag:'🇮🇳',numbers:[{num:'108',label:'الإسعاف'},{num:'101',label:'الإطفاء'},{num:'100',label:'الشرطة'},{num:'112',label:'الطوارئ الوطني'}]},
+  BD:{name:'بنغلاديش',flag:'🇧🇩',numbers:[{num:'999',label:'الطوارئ'},{num:'199',label:'الإسعاف'}]},
+  LK:{name:'سريلانكا',flag:'🇱🇰',numbers:[{num:'110',label:'الشرطة'},{num:'111',label:'الإسعاف'},{num:'113',label:'الإطفاء'}]},
+  NP:{name:'نيبال',flag:'🇳🇵',numbers:[{num:'102',label:'الإسعاف'},{num:'101',label:'الشرطة'},{num:'100',label:'الإطفاء'}]},
+  AF:{name:'أفغانستان',flag:'🇦🇫',numbers:[{num:'119',label:'الإسعاف'},{num:'119',label:'الإطفاء'},{num:'119',label:'الشرطة'}]},
+  CN:{name:'الصين',flag:'🇨🇳',numbers:[{num:'120',label:'الإسعاف'},{num:'119',label:'الإطفاء'},{num:'110',label:'الشرطة'}]},
+  JP:{name:'اليابان',flag:'🇯🇵',numbers:[{num:'119',label:'الإسعاف / الإطفاء'},{num:'110',label:'الشرطة'}]},
+  KR:{name:'كوريا الجنوبية',flag:'🇰🇷',numbers:[{num:'119',label:'الإسعاف / الإطفاء'},{num:'112',label:'الشرطة'}]},
+  KP:{name:'كوريا الشمالية',flag:'🇰🇵',numbers:[{num:'119',label:'الإسعاف'}]},
+  TW:{name:'تايوان',flag:'🇹🇼',numbers:[{num:'119',label:'الإسعاف / الإطفاء'},{num:'110',label:'الشرطة'}]},
+  VN:{name:'فيتنام',flag:'🇻🇳',numbers:[{num:'115',label:'الإسعاف'},{num:'114',label:'الإطفاء'},{num:'113',label:'الشرطة'}]},
+  TH:{name:'تايلاند',flag:'🇹🇭',numbers:[{num:'1669',label:'الإسعاف'},{num:'199',label:'الإطفاء'},{num:'191',label:'الشرطة'}]},
+  ID:{name:'إندونيسيا',flag:'🇮🇩',numbers:[{num:'118',label:'الإسعاف'},{num:'113',label:'الإطفاء'},{num:'110',label:'الشرطة'}]},
+  MY:{name:'ماليزيا',flag:'🇲🇾',numbers:[{num:'999',label:'الطوارئ الموحدة'}]},
+  SG:{name:'سنغافورة',flag:'🇸🇬',numbers:[{num:'995',label:'الإسعاف / الإطفاء'},{num:'999',label:'الشرطة'}]},
+  PH:{name:'الفلبين',flag:'🇵🇭',numbers:[{num:'911',label:'الطوارئ الموحدة'}]},
+  MM:{name:'ميانمار',flag:'🇲🇲',numbers:[{num:'192',label:'الإسعاف'},{num:'191',label:'الشرطة'},{num:'199',label:'الإطفاء'}]},
+  KH:{name:'كمبوديا',flag:'🇰🇭',numbers:[{num:'119',label:'الإسعاف'},{num:'118',label:'الإطفاء'},{num:'117',label:'الشرطة'}]},
+  LA:{name:'لاوس',flag:'🇱🇦',numbers:[{num:'195',label:'الإسعاف'},{num:'190',label:'الشرطة'}]},
+  MN:{name:'منغوليا',flag:'🇲🇳',numbers:[{num:'103',label:'الإسعاف'},{num:'101',label:'الإطفاء'},{num:'102',label:'الشرطة'}]},
+  KZ:{name:'كازاخستان',flag:'🇰🇿',numbers:[{num:'103',label:'الإسعاف'},{num:'101',label:'الإطفاء'},{num:'102',label:'الشرطة'}]},
+  UZ:{name:'أوزبكستان',flag:'🇺🇿',numbers:[{num:'103',label:'الإسعاف'},{num:'101',label:'الإطفاء'},{num:'102',label:'الشرطة'}]},
+  TM:{name:'تركمانستان',flag:'🇹🇲',numbers:[{num:'03',label:'الإسعاف'},{num:'01',label:'الإطفاء'},{num:'02',label:'الشرطة'}]},
+  TJ:{name:'طاجيكستان',flag:'🇹🇯',numbers:[{num:'03',label:'الإسعاف'},{num:'01',label:'الإطفاء'},{num:'02',label:'الشرطة'}]},
+  KG:{name:'قيرغيزستان',flag:'🇰🇬',numbers:[{num:'103',label:'الإسعاف'},{num:'101',label:'الإطفاء'},{num:'102',label:'الشرطة'}]},
+  AZ:{name:'أذربيجان',flag:'🇦🇿',numbers:[{num:'103',label:'الإسعاف'},{num:'101',label:'الإطفاء'},{num:'102',label:'الشرطة'}]},
+  AM:{name:'أرمينيا',flag:'🇦🇲',numbers:[{num:'103',label:'الإسعاف'},{num:'101',label:'الإطفاء'},{num:'102',label:'الشرطة'}]},
+  GE:{name:'جورجيا',flag:'🇬🇪',numbers:[{num:'112',label:'الطوارئ الموحدة'}]},
+  /* ═══ أوروبا ═══ */
+  FR:{name:'فرنسا',flag:'🇫🇷',numbers:[{num:'15',label:'الإسعاف SAMU'},{num:'18',label:'رجال الإطفاء'},{num:'17',label:'الشرطة'},{num:'112',label:'طوارئ أوروبا'}]},
+  DE:{name:'ألمانيا',flag:'🇩🇪',numbers:[{num:'112',label:'الإسعاف / الإطفاء'},{num:'110',label:'الشرطة'}]},
+  GB:{name:'المملكة المتحدة',flag:'🇬🇧',numbers:[{num:'999',label:'شرطة / إسعاف / إطفاء'},{num:'112',label:'طوارئ أوروبا'}]},
+  ES:{name:'إسبانيا',flag:'🇪🇸',numbers:[{num:'112',label:'الطوارئ الموحدة'},{num:'061',label:'الإسعاف'}]},
+  IT:{name:'إيطاليا',flag:'🇮🇹',numbers:[{num:'118',label:'الإسعاف'},{num:'115',label:'الإطفاء'},{num:'112',label:'طوارئ'}]},
+  PT:{name:'البرتغال',flag:'🇵🇹',numbers:[{num:'112',label:'الطوارئ الموحدة'}]},
+  BE:{name:'بلجيكا',flag:'🇧🇪',numbers:[{num:'112',label:'الإسعاف / الإطفاء'},{num:'101',label:'الشرطة'}]},
+  NL:{name:'هولندا',flag:'🇳🇱',numbers:[{num:'112',label:'الطوارئ الموحدة'}]},
+  CH:{name:'سويسرا',flag:'🇨🇭',numbers:[{num:'144',label:'الإسعاف'},{num:'118',label:'الإطفاء'},{num:'117',label:'الشرطة'}]},
+  AT:{name:'النمسا',flag:'🇦🇹',numbers:[{num:'144',label:'الإسعاف'},{num:'122',label:'الإطفاء'},{num:'133',label:'الشرطة'}]},
+  SE:{name:'السويد',flag:'🇸🇪',numbers:[{num:'112',label:'الطوارئ الموحدة'}]},
+  NO:{name:'النرويج',flag:'🇳🇴',numbers:[{num:'113',label:'الإسعاف'},{num:'110',label:'الإطفاء'},{num:'112',label:'الشرطة'}]},
+  DK:{name:'الدنمارك',flag:'🇩🇰',numbers:[{num:'112',label:'الطوارئ الموحدة'}]},
+  FI:{name:'فنلندا',flag:'🇫🇮',numbers:[{num:'112',label:'الطوارئ الموحدة'}]},
+  PL:{name:'بولندا',flag:'🇵🇱',numbers:[{num:'112',label:'الطوارئ'},{num:'999',label:'الإسعاف'},{num:'998',label:'الإطفاء'},{num:'997',label:'الشرطة'}]},
+  CZ:{name:'التشيك',flag:'🇨🇿',numbers:[{num:'155',label:'الإسعاف'},{num:'150',label:'الإطفاء'},{num:'158',label:'الشرطة'},{num:'112',label:'طوارئ'}]},
+  SK:{name:'سلوفاكيا',flag:'🇸🇰',numbers:[{num:'155',label:'الإسعاف'},{num:'150',label:'الإطفاء'},{num:'158',label:'الشرطة'}]},
+  HU:{name:'هنغاريا',flag:'🇭🇺',numbers:[{num:'104',label:'الإسعاف'},{num:'105',label:'الإطفاء'},{num:'107',label:'الشرطة'}]},
+  RO:{name:'رومانيا',flag:'🇷🇴',numbers:[{num:'112',label:'الطوارئ الموحدة'}]},
+  BG:{name:'بلغاريا',flag:'🇧🇬',numbers:[{num:'112',label:'الطوارئ الموحدة'}]},
+  HR:{name:'كرواتيا',flag:'🇭🇷',numbers:[{num:'194',label:'الإسعاف'},{num:'193',label:'الإطفاء'},{num:'192',label:'الشرطة'}]},
+  RS:{name:'صربيا',flag:'🇷🇸',numbers:[{num:'194',label:'الإسعاف'},{num:'193',label:'الإطفاء'},{num:'192',label:'الشرطة'}]},
+  SI:{name:'سلوفينيا',flag:'🇸🇮',numbers:[{num:'112',label:'الطوارئ الموحدة'}]},
+  BA:{name:'البوسنة',flag:'🇧🇦',numbers:[{num:'124',label:'الإسعاف'},{num:'123',label:'الإطفاء'},{num:'122',label:'الشرطة'}]},
+  MK:{name:'مقدونيا',flag:'🇲🇰',numbers:[{num:'194',label:'الإسعاف'},{num:'193',label:'الإطفاء'},{num:'192',label:'الشرطة'}]},
+  AL:{name:'ألبانيا',flag:'🇦🇱',numbers:[{num:'127',label:'الإسعاف'},{num:'128',label:'الإطفاء'},{num:'129',label:'الشرطة'}]},
+  GR:{name:'اليونان',flag:'🇬🇷',numbers:[{num:'166',label:'الإسعاف'},{num:'199',label:'الإطفاء'},{num:'100',label:'الشرطة'}]},
+  TR:{name:'تركيا',flag:'🇹🇷',numbers:[{num:'112',label:'الإسعاف'},{num:'110',label:'الإطفاء'},{num:'155',label:'الشرطة'}]},
+  RU:{name:'روسيا',flag:'🇷🇺',numbers:[{num:'103',label:'الإسعاف'},{num:'101',label:'الإطفاء'},{num:'102',label:'الشرطة'},{num:'112',label:'الطوارئ الموحدة'}]},
+  UA:{name:'أوكرانيا',flag:'🇺🇦',numbers:[{num:'103',label:'الإسعاف'},{num:'101',label:'الإطفاء'},{num:'102',label:'الشرطة'}]},
+  BY:{name:'بيلاروسيا',flag:'🇧🇾',numbers:[{num:'103',label:'الإسعاف'},{num:'101',label:'الإطفاء'},{num:'102',label:'الشرطة'}]},
+  MD:{name:'مولدوفا',flag:'🇲🇩',numbers:[{num:'903',label:'الإسعاف'},{num:'901',label:'الإطفاء'},{num:'902',label:'الشرطة'}]},
+  LT:{name:'ليتوانيا',flag:'🇱🇹',numbers:[{num:'112',label:'الطوارئ الموحدة'}]},
+  LV:{name:'لاتفيا',flag:'🇱🇻',numbers:[{num:'112',label:'الطوارئ الموحدة'}]},
+  EE:{name:'إستونيا',flag:'🇪🇪',numbers:[{num:'112',label:'الطوارئ الموحدة'}]},
+  IE:{name:'إيرلندا',flag:'🇮🇪',numbers:[{num:'999',label:'الطوارئ'},{num:'112',label:'طوارئ أوروبا'}]},
+  IS:{name:'آيسلندا',flag:'🇮🇸',numbers:[{num:'112',label:'الطوارئ الموحدة'}]},
+  LU:{name:'لوكسمبورغ',flag:'🇱🇺',numbers:[{num:'112',label:'الإسعاف / الإطفاء'},{num:'113',label:'الشرطة'}]},
+  MT:{name:'مالطا',flag:'🇲🇹',numbers:[{num:'112',label:'الطوارئ الموحدة'}]},
+  CY:{name:'قبرص',flag:'🇨🇾',numbers:[{num:'112',label:'الطوارئ الموحدة'}]},
+  ME:{name:'الجبل الأسود',flag:'🇲🇪',numbers:[{num:'124',label:'الإسعاف'},{num:'123',label:'الإطفاء'},{num:'122',label:'الشرطة'}]},
+  XK:{name:'كوسوفو',flag:'🇽🇰',numbers:[{num:'194',label:'الإسعاف'},{num:'193',label:'الإطفاء'},{num:'192',label:'الشرطة'}]},
+  /* ═══ أمريكا الشمالية ═══ */
+  US:{name:'الولايات المتحدة',flag:'🇺🇸',numbers:[{num:'911',label:'شرطة / إسعاف / إطفاء'}]},
+  CA:{name:'كندا',flag:'🇨🇦',numbers:[{num:'911',label:'شرطة / إسعاف / إطفاء'}]},
+  MX:{name:'المكسيك',flag:'🇲🇽',numbers:[{num:'911',label:'الطوارئ الموحدة'}]},
+  CU:{name:'كوبا',flag:'🇨🇺',numbers:[{num:'104',label:'الإسعاف'},{num:'105',label:'الإطفاء'},{num:'106',label:'الشرطة'}]},
+  HT:{name:'هايتي',flag:'🇭🇹',numbers:[{num:'116',label:'الإسعاف'},{num:'118',label:'الشرطة'}]},
+  DO:{name:'الدومينيكان',flag:'🇩🇴',numbers:[{num:'911',label:'الطوارئ الموحدة'}]},
+  JM:{name:'جامايكا',flag:'🇯🇲',numbers:[{num:'110',label:'الشرطة'},{num:'110',label:'الإسعاف'}]},
+  TT:{name:'ترينيداد',flag:'🇹🇹',numbers:[{num:'990',label:'الشرطة'},{num:'811',label:'الإسعاف'}]},
+  GT:{name:'غواتيمالا',flag:'🇬🇹',numbers:[{num:'125',label:'الإسعاف'},{num:'122',label:'الإطفاء'},{num:'110',label:'الشرطة'}]},
+  HN:{name:'هندوراس',flag:'🇭🇳',numbers:[{num:'195',label:'الإسعاف'},{num:'198',label:'الإطفاء'},{num:'199',label:'الشرطة'}]},
+  SV:{name:'السلفادور',flag:'🇸🇻',numbers:[{num:'132',label:'الإسعاف'},{num:'913',label:'الإطفاء'},{num:'911',label:'الطوارئ'}]},
+  NI:{name:'نيكاراغوا',flag:'🇳🇮',numbers:[{num:'128',label:'الإسعاف'},{num:'115',label:'الإطفاء'},{num:'118',label:'الشرطة'}]},
+  CR:{name:'كوستاريكا',flag:'🇨🇷',numbers:[{num:'911',label:'الطوارئ الموحدة'}]},
+  PA:{name:'بنما',flag:'🇵🇦',numbers:[{num:'911',label:'الطوارئ الموحدة'}]},
+  /* ═══ أمريكا الجنوبية ═══ */
+  BR:{name:'البرازيل',flag:'🇧🇷',numbers:[{num:'192',label:'الإسعاف SAMU'},{num:'193',label:'الإطفاء'},{num:'190',label:'الشرطة'},{num:'191',label:'الدرك'}]},
+  AR:{name:'الأرجنتين',flag:'🇦🇷',numbers:[{num:'107',label:'الإسعاف'},{num:'100',label:'الإطفاء'},{num:'911',label:'الشرطة'}]},
+  CL:{name:'تشيلي',flag:'🇨🇱',numbers:[{num:'131',label:'الإسعاف'},{num:'132',label:'الإطفاء'},{num:'133',label:'الشرطة'}]},
+  CO:{name:'كولومبيا',flag:'🇨🇴',numbers:[{num:'125',label:'الإسعاف'},{num:'119',label:'الإطفاء'},{num:'112',label:'الطوارئ'}]},
+  PE:{name:'بيرو',flag:'🇵🇪',numbers:[{num:'106',label:'الإسعاف'},{num:'116',label:'الإطفاء'},{num:'105',label:'الشرطة'}]},
+  VE:{name:'فنزويلا',flag:'🇻🇪',numbers:[{num:'171',label:'الطوارئ الموحدة'}]},
+  EC:{name:'الإكوادور',flag:'🇪🇨',numbers:[{num:'911',label:'الطوارئ الموحدة'}]},
+  BO:{name:'بوليفيا',flag:'🇧🇴',numbers:[{num:'118',label:'الإسعاف'},{num:'119',label:'الإطفاء'},{num:'110',label:'الشرطة'}]},
+  PY:{name:'باراغواي',flag:'🇵🇾',numbers:[{num:'141',label:'الإسعاف'},{num:'132',label:'الإطفاء'},{num:'911',label:'الشرطة'}]},
+  UY:{name:'أوروغواي',flag:'🇺🇾',numbers:[{num:'105',label:'الإسعاف'},{num:'104',label:'الإطفاء'},{num:'911',label:'الشرطة'}]},
+  GY:{name:'غيانا',flag:'🇬🇾',numbers:[{num:'913',label:'الإسعاف'},{num:'912',label:'الإطفاء'},{num:'911',label:'الشرطة'}]},
+  SR:{name:'سورينام',flag:'🇸🇷',numbers:[{num:'115',label:'الإسعاف'},{num:'110',label:'الإطفاء'},{num:'115',label:'الشرطة'}]},
+  /* ═══ أوقيانوسيا ═══ */
+  AU:{name:'أستراليا',flag:'🇦🇺',numbers:[{num:'000',label:'الطوارئ الموحدة'},{num:'112',label:'طوارئ دولية'}]},
+  NZ:{name:'نيوزيلندا',flag:'🇳🇿',numbers:[{num:'111',label:'الطوارئ الموحدة'}]},
+  FJ:{name:'فيجي',flag:'🇫🇯',numbers:[{num:'911',label:'الطوارئ الموحدة'}]},
+  PG:{name:'بابوا',flag:'🇵🇬',numbers:[{num:'111',label:'الطوارئ الموحدة'}]},
+  _DEFAULT:{name:'',flag:'🌍',numbers:[{num:'112',label:'الطوارئ الدولية'}]}
+};
+
+// Populate country selector
+(function populateCountries(){
+  const sel = document.getElementById('med-country');
+  if(!sel) return;
+  Object.entries(WORLD_EMERGENCY_DB).forEach(([code, country])=>{
+    const opt = document.createElement('option');
+    opt.value = code;
+    opt.textContent = `${country.flag} ${country.name}`;
+    sel.appendChild(opt);
+  });
+})();
+
+function updateEmergencyNumbers(){
+  const sel = document.getElementById('med-country');
+  const list = document.getElementById('med-emergency-list');
+  if(!sel||!list) return;
+  const code = sel.value;
+  const country = WORLD_EMERGENCY_DB[code];
+  if(!country){ list.innerHTML=''; return; }
+
+  list.innerHTML = country.numbers.map((n,i)=>
+    `<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(231,76,60,0.08);border:1px solid rgba(231,76,60,0.2);border-radius:8px;">
+      <span style="font-size:11px;color:var(--text-dim);flex:1;">${n.label}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:#e74c3c;direction:ltr;">${n.num}</span>
+      ${i===0?'<span style="font-size:9px;background:rgba(231,76,60,0.2);color:#e74c3c;padding:2px 6px;border-radius:4px;">الأساسي</span>':''}
+    </div>`
+  ).join('');
+
+  // Auto-set primary emergency number
+  if(medProfile) medProfile.emergencyNum = country.numbers[0].num;
+  else medProfile = { emergencyNum: country.numbers[0].num };
+}
+
+// Update saveMedProfile to include country
+const _origSave = saveMedProfile;
+saveMedProfile = function(){
+  _origSave();
+  const sel = document.getElementById('med-country');
+  if(sel&&sel.value&&medProfile){
+    const country = WORLD_EMERGENCY_DB[sel.value];
+    if(country){
+      medProfile.countryCode = sel.value;
+      medProfile.emergencyNum = country.numbers[0].num;
+      medProfile.allEmergencyNums = country.numbers;
+    }
+  }
+};
+
 </script>
+
+<!-- ══ BOUTON SOS ══ -->
+<div class="sos-fab" onclick="openMedPanel()" title="دossier médical / SOS">🆘</div>
+
+<!-- ══ DOSSIER MÉDICAL ══ -->
+<div class="med-panel" id="med-panel">
+  <div class="med-header">
+    <div class="med-title">🏥 الدossier الطبي — LORD SIDHOM</div>
+    <div class="med-close" onclick="closeMedPanel()">✕</div>
+  </div>
+
+  <div class="med-section">
+    <div class="med-section-title">👤 المعلومات الشخصية</div>
+    <div class="med-row">
+      <div style="flex:1"><label class="med-label">الاسم الكامل</label><input class="med-input" id="med-name" placeholder="محمد سيدهم"></div>
+    </div>
+    <div class="med-row">
+      <div style="flex:1"><label class="med-label">العمر</label><input class="med-input" id="med-age" type="number" placeholder="45"></div>
+      <div style="flex:1"><label class="med-label">فصيلة الدم</label>
+        <select class="med-select" id="med-blood">
+          <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+          <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="med-section">
+    <div class="med-section-title">💊 المعلومات الطبية</div>
+    <div class="med-row">
+      <div style="flex:1"><label class="med-label">الأمراض المزمنة</label><input class="med-input" id="med-conditions" placeholder="ضغط الدم، السكري..."></div>
+    </div>
+    <div class="med-row">
+      <div style="flex:1"><label class="med-label">الأدوية الحالية</label><input class="med-input" id="med-meds" placeholder="أملوديبين، ميتفورمين..."></div>
+    </div>
+    <div class="med-row">
+      <div style="flex:1"><label class="med-label">الحساسية</label><input class="med-input" id="med-allergy" placeholder="البنسلين، الأسبرين..."></div>
+    </div>
+  </div>
+
+  <div class="med-section">
+    <div class="med-section-title">📞 أرقام الطوارئ الشخصية</div>
+    <div class="med-row">
+      <div style="flex:1"><label class="med-label">رقم 1 (عائلة)</label><input class="med-input" id="med-contact1" type="tel" placeholder="+21698000001" dir="ltr"></div>
+      <div style="flex:1"><label class="med-label">الاسم</label><input class="med-input" id="med-contact1-name" placeholder="الزوجة / الابن"></div>
+    </div>
+    <div class="med-row">
+      <div style="flex:1"><label class="med-label">رقم 2 (طبيب)</label><input class="med-input" id="med-contact2" type="tel" placeholder="+21625000002" dir="ltr"></div>
+      <div style="flex:1"><label class="med-label">الاسم</label><input class="med-input" id="med-contact2-name" placeholder="الدكتور..."></div>
+    </div>
+    <div class="med-row">
+      <div style="flex:1"><label class="med-label">رقم 3 (جار / صديق)</label><input class="med-input" id="med-contact3" type="tel" placeholder="+21620000003" dir="ltr"></div>
+      <div style="flex:1"><label class="med-label">الاسم</label><input class="med-input" id="med-contact3-name" placeholder="الجار محمد"></div>
+    </div>
+    <div class="med-row">
+      <div style="flex:1">
+        <label class="med-label">البلد — الأرقام تُحدَّث تلقائياً</label>
+        <select class="med-select" id="med-country" onchange="updateEmergencyNumbers()">
+          <option value="">اختر بلدك...</option>
+        </select>
+      </div>
+    </div>
+    <div id="med-emergency-list" style="display:flex;flex-direction:column;gap:6px;margin-top:6px;"></div>
+  </div>
+
+  <div class="med-section">
+    <div class="med-section-title">🔔 إعدادات التنبيه</div>
+    <div class="med-row">
+      <div style="flex:1"><label class="med-label">الحد الأقصى لضربات القلب (نبض/دقيقة)</label><input class="med-input" id="med-hr-max" type="number" placeholder="150" dir="ltr"></div>
+      <div style="flex:1"><label class="med-label">الحد الأدنى</label><input class="med-input" id="med-hr-min" type="number" placeholder="40" dir="ltr"></div>
+    </div>
+    <div class="med-row">
+      <div style="flex:1"><label class="med-label">وقت الانتظار قبل الاتصال (ثانية)</label><input class="med-input" id="med-countdown" type="number" placeholder="30" dir="ltr"></div>
+    </div>
+  </div>
+
+  <button class="med-save-btn" onclick="saveMedProfile()">💾 حفظ الدossier الطبي</button>
+  <div class="med-saved-badge" id="med-saved-badge">✅ تم الحفظ — الجزري جاهز للطوارئ</div>
+
+  <!-- Test SOS -->
+  <button class="med-save-btn" style="background:rgba(231,76,60,0.15);margin-top:10px;" onclick="closeMedPanel();triggerSOS(false);">🧪 اختبار نظام الطوارئ</button>
+</div>
+
+<!-- ══ ÉCRAN ALERTE ══ -->
+<div class="sos-alert" id="sos-alert">
+  <div class="sos-icon">🚨</div>
+  <div class="sos-title">تنبيه طبي!</div>
+  <div class="sos-countdown" id="sos-countdown">30</div>
+  <div class="sos-sub">اضغط إلغاء إذا كنت بخير — وإلا سيتصل الجزري بالإسعاف</div>
+  <button class="sos-cancel-btn" onclick="cancelSOS()">✋ أنا بخير — إلغاء</button>
+  <button class="sos-manual-btn" onclick="launchSOS()">🆘 اتصل الآن فوراً</button>
+</div>
+
+<!-- ══ ÉCRAN APPEL ══ -->
+<div class="sos-calling" id="sos-calling">
+  <div class="calling-icon">📞</div>
+  <div class="calling-name" id="calling-name">جاري الاتصال...</div>
+  <div class="calling-status" id="calling-status">الجزري يتصل بالإسعاف</div>
+  <button class="calling-end-btn" onclick="endSOSCalling()">⛔ إنهاء</button>
+</div>
+
 </body>
 </html>
