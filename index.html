@@ -613,11 +613,6 @@ function startItineraryListen(){
   btn.style.background='linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,215,0,0.05))';
   itinListening=true;
 
-  // Greeting
-  window.speechSynthesis.cancel();
-  const greet=new SpeechSynthesisUtterance('أسمعك. قل لي ماذا تريد أن تفعل وكم من الوقت عندك.');
-  greet.lang='ar-SA';greet.rate=0.88;
-
   itinRecognition=new SR();
   itinRecognition.lang='ar-SA';
   itinRecognition.continuous=false;
@@ -626,14 +621,30 @@ function startItineraryListen(){
   itinRecognition.onresult=function(e){
     const text=e.results[0][0].transcript;
     stopItineraryListen();
-    processItineraryVoice(text);
+    // Confirm heard
+    window.speechSynthesis.cancel();
+    const conf=new SpeechSynthesisUtterance('سمعتك. ' );
+    conf.lang='ar-SA';conf.rate=0.88;
+    conf.onend=()=>processItineraryVoice(text);
+    window.speechSynthesis.speak(conf);
   };
-  itinRecognition.onerror=function(){stopItineraryListen();};
-  itinRecognition.onend=function(){stopItineraryListen();};
+  itinRecognition.onerror=function(e){
+    stopItineraryListen();
+    if(e.error==='no-speech'){
+      const u=new SpeechSynthesisUtterance('لم أسمعك، حاول مرة أخرى.');
+      u.lang='ar-SA';window.speechSynthesis.speak(u);
+    }
+  };
+  itinRecognition.onend=function(){if(itinListening)stopItineraryListen();};
 
-  greet.onend=()=>{
-    try{itinRecognition.start();}catch(e){}
-  };
+  // Unlock audio and speak greeting, then start mic
+  window.speechSynthesis.cancel();
+  const greet=new SpeechSynthesisUtterance('أسمعك. قل لي ماذا تريد أن تفعل وكم من الوقت عندك.');
+  greet.lang='ar-SA';greet.rate=0.88;
+  greet.onend=()=>{try{itinRecognition.start();}catch(e){stopItineraryListen();}};
+  greet.onerror=()=>{try{itinRecognition.start();}catch(e){stopItineraryListen();}};
+  // Fallback if TTS blocked
+  setTimeout(()=>{if(itinListening&&itinRecognition){try{itinRecognition.start();}catch(e){}}},4000);
   window.speechSynthesis.speak(greet);
 }
 
